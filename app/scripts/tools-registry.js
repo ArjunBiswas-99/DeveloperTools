@@ -95,7 +95,7 @@ const ToolsRegistry = {
             modulePath: '../tools/diff-viewer/tool.js',
             category: 'utilities',
             tags: ['diff', 'compare', 'text', 'json'],
-            disabled: true
+            disabled: false
         }
     ],
     
@@ -2638,6 +2638,15 @@ const ToolsRegistry = {
                     html = toolModule.template;
                 } else {
                     throw new Error('JWT Decoder tool template not found in module');
+                }
+            } else if (id === 'diff-viewer') {
+                // The diff-viewer tool has its own embedded HTML template in tool.js
+                // Use the template from the loaded module
+                const toolModule = window.Tool_diff_viewer;
+                if (toolModule && toolModule.template) {
+                    html = toolModule.template;
+                } else {
+                    throw new Error('Diff Viewer tool template not found in module');
                 }
             } else if (id === 'color-utilities') {
                 // Check if CSS is already loaded

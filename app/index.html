@@ -3,38 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeveloperTools</title>
+    <title>DeveloperTools - Professional Developer Utilities</title>
     <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/theme.css">
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOCIgZmlsbD0iIzA5N0ZGRiIvPgo8cGF0aCBkPSJNOCAxMkg5LjVMMTIgMTZMMTQuNSAxMkgxNlYyMEgxNFYxNUwxMiAxOEwxMCAxNVYyMEg4VjEyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+">
 </head>
 <body>
     <div id="app">
-        <!-- Top Panel: Tabs/Menu -->
-        <header id="top-panel" class="top-panel">
-            <nav class="tabs-container">
-                <div class="app-title">
-                    <h1>DeveloperTools</h1>
+        <!-- Professional Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">⚡</div>
+                    <div class="brand-info">
+                        <h1 class="app-title">DeveloperTools</h1>
+                        <span class="app-tagline">Professional Developer Utilities Suite</span>
+                    </div>
                 </div>
-                <div id="tabs" class="tabs"></div>
-                <div class="search-container">
+                
+                <div class="header-actions">
                     <input type="text" id="tool-search" placeholder="Search tools..." class="search-input">
-                </div>
-            </nav>
-        </header>
-
-        <!-- Bottom Panel: Tool Content -->
-        <main id="bottom-panel" class="bottom-panel">
-            <div id="tool-container" class="tool-container">
-                <div class="welcome-message">
-                    <h2>Welcome to DeveloperTools</h2>
-                    <p>Select a tool from the tabs above to get started.</p>
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light theme">
+                        <span class="theme-icon">🌓</span>
+                    </button>
+                    <button id="help-button" class="help-button" title="Help & Documentation" aria-label="Help">
+                        <span class="help-icon">❓</span>
+                    </button>
                 </div>
             </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="tab-navigation" id="tab-navigation" role="tablist">
+                <button class="tab-button active" id="home-tab" role="tab" aria-selected="true" aria-controls="home-panel">
+                    <span class="tab-icon">🏠</span>
+                    <span class="tab-text">Home</span>
+                </button>
+                <!-- Tool tabs will be dynamically inserted here -->
+            </nav>
+        </header>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Home Panel -->
+            <div id="home-panel" class="content-panel active" role="tabpanel" aria-labelledby="home-tab">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h2 class="hero-title">Welcome to DeveloperTools</h2>
+                        <p class="hero-subtitle">A comprehensive suite of professional developer utilities designed to streamline your workflow and boost productivity.</p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">10+</div>
+                                <div class="stat-label">Professional Tools</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">100%</div>
+                                <div class="stat-label">Client-Side</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0ms</div>
+                                <div class="stat-label">Server Latency</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-section">
+                    <h3 class="section-title">Available Tools</h3>
+                    <div class="tools-grid" id="tools-grid">
+                        <!-- Tools will be dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="benefits-section">
+                    <h3 class="section-title">Why Choose DeveloperTools?</h3>
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <div class="benefit-icon">🔒</div>
+                            <h4>Privacy First</h4>
+                            <p>All processing happens locally in your browser. Your data never leaves your machine.</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">⚡</div>
+                            <h4>Lightning Fast</h4>
+                            <p>No server round-trips mean instant results. Process large files without delays.</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">📱</div>
+                            <h4>Works Everywhere</h4>
+                            <p>Responsive design works perfectly on desktop, tablet, and mobile devices.</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">🎨</div>
+                            <h4>Beautiful Interface</h4>
+                            <p>Clean, professional design with dark/light themes and intuitive controls.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h3 class="cta-title">Ready to Get Started?</h3>
+                    <p class="cta-subtitle">Choose a tool from the navigation above or explore our most popular utilities below.</p>
+                    <div class="cta-buttons" id="cta-buttons">
+                        <!-- Popular tool buttons will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tool Container -->
+            <div id="tool-container" class="content-panel tool-panel">
+                <!-- Individual tools will be loaded here -->
+            </div>
         </main>
+        
+        <!-- Professional Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <span>DeveloperTools v1.0 • Built with ❤️ for developers</span>
+                </div>
+                <div class="footer-links">
+                    <button class="footer-link" id="about-link">About</button>
+                    <button class="footer-link" id="privacy-link">Privacy</button>
+                    <button class="footer-link" id="feedback-link">Feedback</button>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Toast notifications -->
+    <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading tool...</div>
+    </div>
 
     <!-- Scripts -->
     <script src="scripts/utils/dom.js"></script>

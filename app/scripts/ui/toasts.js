@@ -13,7 +13,7 @@ const Toasts = {
     },
     
     // Show toast notification
-    show: (type = 'info', message, options = {}) => {
+    show: (message, type = 'info', options = {}) => {
         if (!Toasts.container) {
             console.warn('Toast system not initialized');
             return null;
@@ -183,27 +183,27 @@ const Toasts = {
     
     // Convenience methods for different types
     success: (message, options = {}) => {
-        return Toasts.show('success', message, options);
+        return Toasts.show(message, 'success', options);
     },
     
     error: (message, options = {}) => {
-        return Toasts.show('error', message, { 
+        return Toasts.show(message, 'error', { 
             duration: 8000, // Longer for errors
             ...options 
         });
     },
     
     warning: (message, options = {}) => {
-        return Toasts.show('warning', message, options);
+        return Toasts.show(message, 'warning', options);
     },
     
     info: (message, options = {}) => {
-        return Toasts.show('info', message, options);
+        return Toasts.show(message, 'info', options);
     },
     
     // Show loading toast
     loading: (message = 'Loading...', options = {}) => {
-        return Toasts.show('info', message, {
+        return Toasts.show(message, 'info', {
             persistent: true,
             ...options
         });
@@ -244,7 +244,7 @@ const Toasts = {
     
     // Show confirmation toast with action
     confirm: (message, onConfirm, onCancel = null) => {
-        return Toasts.show('warning', message, {
+        return Toasts.show(message, 'warning', {
             persistent: true,
             action: {
                 text: 'Confirm',

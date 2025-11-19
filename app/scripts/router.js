@@ -82,13 +82,12 @@ const Router = {
                 return;
             }
             
-            // Update tabs to show active tool
-            if (window.Tabs) {
-                Tabs.selectTab(toolId);
-            }
-            
             // If same tool is already loaded, don't reload
             if (Router.currentTool === toolId && Router.currentToolModule) {
+                // Still update tabs
+                if (window.Tabs && typeof window.Tabs.selectTab === 'function') {
+                    window.Tabs.selectTab(toolId);
+                }
                 return;
             }
             
@@ -125,6 +124,13 @@ const Router = {
             // Store current tool info
             Router.currentTool = toolId;
             Router.currentToolModule = toolModule;
+            
+            // Update tabs after successful mount
+            setTimeout(() => {
+                if (window.Tabs && typeof window.Tabs.selectTab === 'function') {
+                    window.Tabs.selectTab(toolId);
+                }
+            }, 50);
             
             // Update page title
             document.title = `${toolConfig.name} - DeveloperTools`;

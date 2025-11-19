@@ -99,6 +99,9 @@ const Tabs = {
             json: `<svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.53 3.36,19.36 3,18.5C2.64,19.36 2.07,20.53 1,21H-1V19H1V14A2,2 0 0,1 3,12A2,2 0 0,1 1,10V5H-1V3H1C2.07,3.47 2.64,4.64 3,5.5C3.36,4.64 3.93,3.47 5,3M19,3H21V5H19V10A2,2 0 0,0 21,12A2,2 0 0,0 19,14V19H21V21H19C17.93,20.53 17.36,19.36 17,18.5C16.64,19.36 16.07,20.53 15,21H13V19H15V14A2,2 0 0,0 17,12A2,2 0 0,0 15,10V5H13V3H15C16.07,3.47 16.64,4.64 17,5.5C17.36,4.64 17.93,3.47 19,3Z"/>
             </svg>`,
+            '📋': `<svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M5,3H7V5H5V10A2,2 0 0,1 3,12A2,2 0 0,1 5,14V19H7V21H5C3.93,20.53 3.36,19.36 3,18.5C2.64,19.36 2.07,20.53 1,21H-1V19H1V14A2,2 0 0,1 3,12A2,2 0 0,1 1,10V5H-1V3H1C2.07,3.47 2.64,4.64 3,5.5C3.36,4.64 3.93,3.47 5,3M19,3H21V5H19V10A2,2 0 0,0 21,12A2,2 0 0,0 19,14V19H21V21H19C17.93,20.53 17.36,19.36 17,18.5C16.64,19.36 16.07,20.53 15,21H13V19H15V14A2,2 0 0,0 17,12A2,2 0 0,0 15,10V5H13V3H15C16.07,3.47 16.64,4.64 17,5.5C17.36,4.64 17.93,3.47 19,3Z"/>
+            </svg>`,
             base64: `<svg viewBox="0 0 24 24" fill="currentColor">
                 <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
             </svg>`,
@@ -134,33 +137,44 @@ const Tabs = {
         return icons[iconName] || icons.default;
     },
     
-    // Select tab
+    // Select tab - now with safety checks
     selectTab: (toolId) => {
-        // Remove active class from all tabs
-        const allTabs = DOM.qsa('.tab', Tabs.container);
-        allTabs.forEach(tab => {
-            tab.classList.remove('active');
-            tab.setAttribute('aria-selected', 'false');
-        });
+        if (!Tabs.container) {
+            console.warn('Tabs container not available for selectTab');
+            return;
+        }
         
-        // Add active class to selected tab
-        const selectedTab = DOM.qs(`[data-tool-id="${toolId}"]`, Tabs.container);
-        if (selectedTab) {
-            selectedTab.classList.add('active');
-            selectedTab.setAttribute('aria-selected', 'true');
-            Tabs.activeTab = toolId;
-            
-            // Store last selected tool
-            if (window.Storage) {
-                window.Storage.setLastTool(toolId);
+        try {
+            // Remove active class from all tabs
+            const allTabs = DOM.qsa('.tab', Tabs.container);
+            if (allTabs) {
+                allTabs.forEach(tab => {
+                    tab.classList.remove('active');
+                    tab.setAttribute('aria-selected', 'false');
+                });
             }
             
-            // Scroll tab into view if needed
-            selectedTab.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest',
-                inline: 'center'
-            });
+            // Add active class to selected tab
+            const selectedTab = DOM.qs(`[data-tool-id="${toolId}"]`, Tabs.container);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+                selectedTab.setAttribute('aria-selected', 'true');
+                Tabs.activeTab = toolId;
+                
+                // Store last selected tool
+                if (window.Storage) {
+                    window.Storage.setLastTool(toolId);
+                }
+                
+                // Scroll tab into view if needed
+                selectedTab.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest',
+                    inline: 'center'
+                });
+            }
+        } catch (error) {
+            console.warn('Error in selectTab:', error);
         }
     },
     

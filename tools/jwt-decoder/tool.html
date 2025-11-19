@@ -1,0 +1,387 @@
+<!-- JWT Decoder Tool Tabs -->
+<div class="jwt-decoder-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="decoder">JWT Decoder</button>
+        <button class="tab-btn" data-tab="builder">JWT Builder</button>
+        <button class="tab-btn" data-tab="validator">JWT Validator</button>
+    </div>
+    
+    <!-- JWT Decoder Tab -->
+    <div class="tab-content active" id="decoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>JWT Token Input</h3>
+                
+                <div class="tool-controls">
+                    <button id="decode-btn" class="primary">🔍 Decode JWT</button>
+                    
+                    <div class="decoder-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="auto-decode" checked />
+                            Auto-decode
+                        </label>
+                    </div>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-jwt-file" accept=".txt,.jwt" />
+                        <label for="upload-jwt-file" class="file-upload-label">
+                            📁 Upload JWT File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-jwt" 
+                        class="tool-textarea" 
+                        placeholder="Paste your JWT token here...&#10;&#10;Example:&#10;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="drop-zone" id="jwt-drop-zone">
+                        <div class="drop-zone-content">
+                            <span class="drop-icon">🎫</span>
+                            <p>Drop JWT file here</p>
+                            <span class="drop-hint">Supports .txt, .jwt files</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Characters: <span id="input-jwt-chars">0</span></span>
+                    <span>Status: <span id="jwt-status">Unknown</span></span>
+                    <span>Parts: <span id="jwt-parts">0</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Decoded Content</h3>
+                
+                <div class="decoded-sections">
+                    <div class="decoded-section">
+                        <h4>Header</h4>
+                        <div class="tool-actions">
+                            <button id="copy-header-btn">📋 Copy Header</button>
+                        </div>
+                        <textarea 
+                            id="decoded-header" 
+                            class="tool-textarea decoded-content" 
+                            placeholder="JWT header will appear here..."
+                            readonly
+                            spellcheck="false"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="decoded-section">
+                        <h4>Payload</h4>
+                        <div class="tool-actions">
+                            <button id="copy-payload-btn">📋 Copy Payload</button>
+                        </div>
+                        <textarea 
+                            id="decoded-payload" 
+                            class="tool-textarea decoded-content" 
+                            placeholder="JWT payload will appear here..."
+                            readonly
+                            spellcheck="false"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="decoded-section">
+                        <h4>Signature Info</h4>
+                        <div id="signature-info" class="signature-info">
+                            <div class="info-item">
+                                <span class="info-label">Algorithm:</span>
+                                <span class="info-value" id="sig-algorithm">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Signature:</span>
+                                <span class="info-value" id="sig-value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Verification:</span>
+                                <span class="info-value" id="sig-verification">⚠️ Need Secret</span>
+                            </div>
+                        </div>
+                        <button id="verify-signature-btn">🔑 Verify Signature</button>
+                    </div>
+                </div>
+                
+                <div class="token-analysis" id="token-analysis">
+                    <h4>Token Analysis</h4>
+                    <div class="analysis-content">
+                        <p class="placeholder">Decode a JWT token to see analysis</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JWT Builder Tab -->
+    <div class="tab-content" id="builder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>JWT Configuration</h3>
+                
+                <div class="config-section">
+                    <h4>Header Configuration</h4>
+                    <div class="algorithm-selection">
+                        <label>Algorithm:</label>
+                        <select id="jwt-algorithm">
+                            <option value="HS256">HS256 (HMAC SHA-256)</option>
+                            <option value="HS384">HS384 (HMAC SHA-384)</option>
+                            <option value="HS512">HS512 (HMAC SHA-512)</option>
+                            <option value="RS256">RS256 (RSA SHA-256)</option>
+                            <option value="RS384">RS384 (RSA SHA-384)</option>
+                            <option value="RS512">RS512 (RSA SHA-512)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="header-editor">
+                        <label>Header JSON:</label>
+                        <textarea 
+                            id="header-json" 
+                            class="tool-textarea json-editor"
+                            spellcheck="false"
+                        >{\n  "alg": "HS256",\n  "typ": "JWT"\n}</textarea>
+                    </div>
+                </div>
+                
+                <div class="config-section">
+                    <h4>Payload Configuration</h4>
+                    
+                    <div class="standard-claims">
+                        <div class="claim-input">
+                            <label>Subject (sub):</label>
+                            <input type="text" id="claim-sub" placeholder="User ID or identifier">
+                        </div>
+                        <div class="claim-input">
+                            <label>Issuer (iss):</label>
+                            <input type="text" id="claim-iss" placeholder="Token issuer">
+                        </div>
+                        <div class="claim-input">
+                            <label>Audience (aud):</label>
+                            <input type="text" id="claim-aud" placeholder="Token audience">
+                        </div>
+                    </div>
+                    
+                    <div class="time-claims">
+                        <div class="time-claim">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-iat" checked />
+                                Include Issued At (iat)
+                            </label>
+                        </div>
+                        <div class="time-claim">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-exp" checked />
+                                Include Expires In:
+                            </label>
+                            <select id="exp-duration">
+                                <option value="3600">1 hour</option>
+                                <option value="86400">1 day</option>
+                                <option value="604800">1 week</option>
+                                <option value="2592000">1 month</option>
+                                <option value="custom">Custom...</option>
+                            </select>
+                            <input type="number" id="exp-custom" placeholder="Seconds" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="custom-claims">
+                        <h5>Custom Claims</h5>
+                        <div id="custom-claims-list">
+                            <!-- Custom claims will be added here -->
+                        </div>
+                        <button id="add-claim-btn" class="secondary">+ Add Custom Claim</button>
+                    </div>
+                </div>
+                
+                <div class="config-section">
+                    <h4>Secret/Key Configuration</h4>
+                    
+                    <div class="signing-method">
+                        <label>
+                            <input type="radio" name="signing-method" value="secret" checked />
+                            Secret (HMAC)
+                        </label>
+                        <label>
+                            <input type="radio" name="signing-method" value="private-key" />
+                            Private Key (RSA)
+                        </label>
+                    </div>
+                    
+                    <div class="secret-input">
+                        <label>Secret:</label>
+                        <input type="password" id="jwt-secret" placeholder="Enter secret key">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="show-secret" />
+                            Show secret
+                        </label>
+                        <button id="generate-secret-btn" class="secondary">🔑 Generate Random</button>
+                    </div>
+                </div>
+                
+                <div class="build-actions">
+                    <button id="build-jwt-btn" class="primary">🏗️ Build JWT Token</button>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Preview & Output</h3>
+                
+                <div class="preview-section">
+                    <h4>Payload Preview</h4>
+                    <textarea 
+                        id="payload-preview" 
+                        class="tool-textarea json-editor"
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="output-section">
+                    <h4>Generated JWT Token</h4>
+                    <textarea 
+                        id="generated-jwt" 
+                        class="tool-textarea jwt-output"
+                        placeholder="Built JWT token will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="tool-actions">
+                        <button id="copy-jwt-btn">📋 Copy Token</button>
+                        <button id="download-jwt-btn">💾 Download</button>
+                        <button id="decode-generated-btn">🔍 Decode & View</button>
+                        <button id="clear-builder-btn">🗑️ Clear</button>
+                    </div>
+                    
+                    <div class="tool-status">
+                        <span>Token Length: <span id="jwt-length">0</span></span>
+                        <span>Algorithm: <span id="jwt-alg-display">HS256</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JWT Validator Tab -->
+    <div class="tab-content" id="validator-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Validation Input</h3>
+                
+                <div class="validation-input">
+                    <label>JWT Token:</label>
+                    <textarea 
+                        id="validate-jwt" 
+                        class="tool-textarea"
+                        placeholder="Enter JWT token to validate..."
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-validate-file" accept=".txt,.jwt" />
+                        <label for="upload-validate-file" class="file-upload-label">
+                            📁 Upload JWT File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="validation-key">
+                    <label>Verification Key/Secret:</label>
+                    <input type="password" id="validation-secret" placeholder="Enter secret or public key">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-validation-key" />
+                        Show key
+                    </label>
+                    
+                    <div class="algorithm-detection">
+                        <label>Algorithm:</label>
+                        <select id="validation-algorithm">
+                            <option value="auto">Auto-detect</option>
+                            <option value="HS256">HS256</option>
+                            <option value="HS384">HS384</option>
+                            <option value="HS512">HS512</option>
+                            <option value="RS256">RS256</option>
+                            <option value="RS384">RS384</option>
+                            <option value="RS512">RS512</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="validation-options">
+                    <h4>Validation Options</h4>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="check-expiration" checked />
+                        Check expiration
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="check-not-before" checked />
+                        Check not before
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="verify-issuer" />
+                        Verify issuer
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="verify-audience" />
+                        Verify audience
+                    </label>
+                    
+                    <div class="expected-values" id="expected-values" style="display: none;">
+                        <div class="expected-input">
+                            <label>Expected Issuer:</label>
+                            <input type="text" id="expected-issuer" placeholder="Expected issuer">
+                        </div>
+                        <div class="expected-input">
+                            <label>Expected Audience:</label>
+                            <input type="text" id="expected-audience" placeholder="Expected audience">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="validation-actions">
+                    <button id="validate-jwt-btn" class="primary">🔍 Validate Token</button>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Validation Results</h3>
+                
+                <div class="validation-results" id="validation-results">
+                    <div class="result-placeholder">
+                        <p>Enter a JWT token and click "Validate Token" to see results</p>
+                    </div>
+                </div>
+                
+                <div class="validation-report" id="validation-report" style="display: none;">
+                    <div class="report-section passed" id="passed-checks">
+                        <h4>✅ Passed</h4>
+                        <ul id="passed-list"></ul>
+                    </div>
+                    
+                    <div class="report-section warnings" id="warning-checks" style="display: none;">
+                        <h4>⚠️ Warnings</h4>
+                        <ul id="warnings-list"></ul>
+                    </div>
+                    
+                    <div class="report-section failed" id="failed-checks" style="display: none;">
+                        <h4>❌ Failed</h4>
+                        <ul id="failed-list"></ul>
+                    </div>
+                    
+                    <div class="report-actions">
+                        <button id="copy-report-btn">📋 Copy Report</button>
+                        <button id="export-report-btn">💾 Export Report</button>
+                        <button id="validate-again-btn">🔄 Validate Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>

@@ -55,7 +55,7 @@ const ToolsRegistry = {
             modulePath: '../tools/jwt-decoder/tool.js',
             category: 'security',
             tags: ['jwt', 'decode', 'token', 'auth'],
-            disabled: true
+            disabled: false
         },
         {
             id: 'color-utilities',
@@ -2619,6 +2619,26 @@ const ToolsRegistry = {
 <!-- Status and Error Display -->
 <div id="status-display"></div>
 <div id="error-display" class="error-display hidden"></div>`;
+            } else if (id === 'jwt-decoder') {
+                // Check if CSS is already loaded
+                if (!document.querySelector('style[data-tool="jwt-decoder"]')) {
+                    const style = document.createElement('style');
+                    style.setAttribute('data-tool', 'jwt-decoder');
+                    // Use the getCSS method from the tool module if available
+                    const toolModule = window.Tool_jwt_decoder;
+                    if (toolModule && toolModule.getCSS) {
+                        style.textContent = toolModule.getCSS();
+                    }
+                    document.head.appendChild(style);
+                }
+                
+                // Use embedded HTML template from the tool module
+                const toolModule = window.Tool_jwt_decoder;
+                if (toolModule && toolModule.template) {
+                    html = toolModule.template;
+                } else {
+                    throw new Error('JWT Decoder tool template not found in module');
+                }
             } else {
                 throw new Error(`Tool '${id}' HTML template not found`);
             }

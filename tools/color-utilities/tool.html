@@ -1,0 +1,144 @@
+<!-- Color Utilities Tool -->
+<div class="color-utilities-container">
+    <div class="tool-layout">
+        <!-- Left Panel: Color Input -->
+        <div class="tool-panel">
+            <h3>Color Input</h3>
+            
+            <div class="color-picker-section">
+                <label for="color-picker">Color Picker:</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="color-picker" value="#3498db" />
+                    <span id="color-preview" class="color-preview"></span>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <label for="color-input">Or Enter Color Value:</label>
+                <input 
+                    type="text" 
+                    id="color-input" 
+                    class="tool-input" 
+                    placeholder="Enter color (hex, rgb, hsl, or name)..."
+                    spellcheck="false"
+                />
+                <button id="convert-btn" class="primary">Convert</button>
+            </div>
+            
+            <div class="format-examples">
+                <h4>Supported Formats</h4>
+                <div class="example-list">
+                    <div class="example-item"><strong>HEX:</strong> #3498db or 3498db</div>
+                    <div class="example-item"><strong>RGB:</strong> rgb(52, 152, 219)</div>
+                    <div class="example-item"><strong>RGBA:</strong> rgba(52, 152, 219, 0.8)</div>
+                    <div class="example-item"><strong>HSL:</strong> hsl(204, 70%, 53%)</div>
+                    <div class="example-item"><strong>HSLA:</strong> hsla(204, 70%, 53%, 0.8)</div>
+                    <div class="example-item"><strong>Name:</strong> blue, red, green</div>
+                </div>
+            </div>
+            
+            <div class="options-section">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="auto-convert" checked />
+                    Auto-convert as you type
+                </label>
+            </div>
+        </div>
+        
+        <!-- Right Panel: Conversion Results -->
+        <div class="tool-panel">
+            <h3>Conversion Results</h3>
+            
+            <div class="conversion-results" id="conversion-results">
+                <div class="result-item">
+                    <label>HEX:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hex-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hex-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HEX (Short):</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hex-short-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hex-short-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>RGB:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="rgb-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="rgb-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>RGBA:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="rgba-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="rgba-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HSL:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hsl-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hsl-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HSLA:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hsla-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hsla-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HSV:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hsv-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hsv-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>CMYK:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="cmyk-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="cmyk-result">📋</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-display-section">
+                <h4>Color Preview</h4>
+                <div id="color-display" class="color-display"></div>
+                <div class="color-info" id="color-info">
+                    <span>Luminance: <strong id="luminance-value">-</strong></span>
+                    <span>Contrast Ratio: <strong id="contrast-ratio">-</strong></span>
+                </div>
+            </div>
+            
+            <div class="tool-actions">
+                <button id="copy-all-btn">📋 Copy All</button>
+                <button id="random-color-btn">🎲 Random Color</button>
+                <button id="clear-btn">🗑️ Clear</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Color Palette Section -->
+    <div class="palette-section">
+        <h3>Color Shades & Tints</h3>
+        <div id="color-palette" class="color-palette"></div>
+    </div>
+</div>
+
+<!-- Status Display -->
+<div id="status-display" class="tool-status"></div>
+<div id="error-display" class="error-display hidden"></div>

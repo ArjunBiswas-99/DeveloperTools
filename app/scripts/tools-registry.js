@@ -65,7 +65,7 @@ const ToolsRegistry = {
             modulePath: '../tools/color-utilities/tool.js',
             category: 'design',
             tags: ['color', 'hex', 'rgb', 'hsl', 'contrast'],
-            disabled: true
+            disabled: false
         },
         {
             id: 'epoch-converter',
@@ -2639,6 +2639,519 @@ const ToolsRegistry = {
                 } else {
                     throw new Error('JWT Decoder tool template not found in module');
                 }
+            } else if (id === 'color-utilities') {
+                // Check if CSS is already loaded
+                if (!document.querySelector('style[data-tool="color-utilities"]')) {
+                    const style = document.createElement('style');
+                    style.setAttribute('data-tool', 'color-utilities');
+                    style.textContent = `/* Color Utilities Tool Styles */
+.color-utilities-tabs {
+    width: 100%;
+    padding: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.tool-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    min-height: 600px;
+}
+
+.tool-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.tool-panel h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.tool-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.color-text-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+}
+
+.color-picker-btn {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.color-swatch-container {
+    margin: 1rem 0;
+}
+
+.color-swatch {
+    width: 100%;
+    height: 150px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swatch-label {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-family: var(--font-mono);
+}
+
+.alpha-control {
+    margin: 1rem 0;
+}
+
+.slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.visual-picker-section {
+    margin: 1rem 0;
+}
+
+.visual-picker {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0.5rem 0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: crosshair;
+}
+
+.picker-cursor {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.hue-slider {
+    background: linear-gradient(to right, 
+        hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), 
+        hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%));
+}
+
+.recent-colors-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.recent-color-item {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.recent-color-item:hover {
+    transform: scale(1.1);
+}
+
+.format-outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.format-item label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.format-value-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.format-output {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    font-family: var(--font-mono);
+}
+
+.copy-btn-small {
+    padding: 0.5rem;
+    min-width: 40px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.color-info {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tool-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+
+.tool-actions button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.tool-actions button.primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.contrast-color-input {
+    margin-bottom: 1rem;
+}
+
+.color-preview-small {
+    width: 100%;
+    height: 60px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.contrast-preview {
+    width: 100%;
+    min-height: 150px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.preview-text-large {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.size-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.size-btn.active {
+    background: var(--accent-color);
+    color: white;
+}
+
+.contrast-ratio-display {
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem 1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.ratio-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    font-family: var(--font-mono);
+}
+
+.wcag-results {
+    margin-bottom: 1.5rem;
+}
+
+.compliance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.compliance-item {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.compliance-item.pass {
+    border-color: var(--success-color);
+    background: var(--success-bg);
+}
+
+.compliance-item.fail {
+    border-color: var(--error-color);
+    background: var(--error-bg);
+}
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.recommendation-item {
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.85rem;
+}
+
+.recommendation-item.success {
+    color: var(--success-color);
+    background: var(--success-bg);
+}
+
+.recommendation-item.warning {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.recommendation-item.error {
+    color: var(--error-color);
+    background: var(--error-bg);
+}`;
+                    document.head.appendChild(style);
+                }
+                
+                // Embed HTML for color-utilities
+                html = `<!-- Color Utilities Tool -->
+<div class="color-utilities-container">
+    <div class="tool-layout">
+        <!-- Left Panel: Color Input -->
+        <div class="tool-panel">
+            <h3>Color Input</h3>
+            
+            <div class="color-picker-section">
+                <label for="color-picker">Color Picker:</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="color-picker" value="#3498db" />
+                    <span id="color-preview" class="color-preview"></span>
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <label for="color-input">Or Enter Color Value:</label>
+                <input 
+                    type="text" 
+                    id="color-input" 
+                    class="tool-input" 
+                    placeholder="Enter color (hex, rgb, hsl, or name)..."
+                    spellcheck="false"
+                />
+                <button id="convert-btn" class="primary">Convert</button>
+            </div>
+            
+            <div class="format-examples">
+                <h4>Supported Formats</h4>
+                <div class="example-list">
+                    <div class="example-item"><strong>HEX:</strong> #3498db or 3498db</div>
+                    <div class="example-item"><strong>RGB:</strong> rgb(52, 152, 219)</div>
+                    <div class="example-item"><strong>RGBA:</strong> rgba(52, 152, 219, 0.8)</div>
+                    <div class="example-item"><strong>HSL:</strong> hsl(204, 70%, 53%)</div>
+                    <div class="example-item"><strong>HSLA:</strong> hsla(204, 70%, 53%, 0.8)</div>
+                    <div class="example-item"><strong>Name:</strong> blue, red, green</div>
+                </div>
+            </div>
+            
+            <div class="options-section">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="auto-convert" checked />
+                    Auto-convert as you type
+                </label>
+            </div>
+        </div>
+        
+        <!-- Right Panel: Conversion Results -->
+        <div class="tool-panel">
+            <h3>Conversion Results</h3>
+            
+            <div class="conversion-results" id="conversion-results">
+                <div class="result-item">
+                    <label>HEX:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hex-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hex-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HEX (Short):</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hex-short-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hex-short-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>RGB:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="rgb-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="rgb-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>RGBA:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="rgba-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="rgba-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HSL:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hsl-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hsl-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HSLA:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hsla-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hsla-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>HSV:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="hsv-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="hsv-result">📋</button>
+                    </div>
+                </div>
+                
+                <div class="result-item">
+                    <label>CMYK:</label>
+                    <div class="result-value-wrapper">
+                        <input type="text" id="cmyk-result" class="result-value" readonly />
+                        <button class="copy-result-btn" data-target="cmyk-result">📋</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="color-display-section">
+                <h4>Color Preview</h4>
+                <div id="color-display" class="color-display"></div>
+                <div class="color-info" id="color-info">
+                    <span>Luminance: <strong id="luminance-value">-</strong></span>
+                    <span>Contrast Ratio: <strong id="contrast-ratio">-</strong></span>
+                </div>
+            </div>
+            
+            <div class="tool-actions">
+                <button id="copy-all-btn">📋 Copy All</button>
+                <button id="random-color-btn">🎲 Random Color</button>
+                <button id="clear-btn">🗑️ Clear</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Color Palette Section -->
+    <div class="palette-section">
+        <h3>Color Shades & Tints</h3>
+        <div id="color-palette" class="color-palette"></div>
+    </div>
+</div>
+
+<!-- Status Display -->
+<div id="status-display" class="tool-status"></div>
+<div id="error-display" class="error-display hidden"></div>`;
             } else {
                 throw new Error(`Tool '${id}' HTML template not found`);
             }

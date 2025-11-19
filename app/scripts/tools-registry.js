@@ -31,12 +31,11 @@ const ToolsRegistry = {
         {
             id: 'uuid-generator',
             name: 'UUID Generator',
-            description: 'Generate v4 (random) and v1 (timestamp) UUIDs',
+            description: 'Generate v4 (random) UUIDs with bulk generation and validation',
             icon: '🆔',
             modulePath: '../tools/uuid-generator/tool.js',
             category: 'generators',
-            tags: ['uuid', 'guid', 'generate', 'random'],
-            disabled: true
+            tags: ['uuid', 'guid', 'generate', 'random']
         },
         {
             id: 'hash-generator',
@@ -1839,6 +1838,782 @@ const ToolsRegistry = {
             <p><strong>Encoded:</strong> <code>caf%C3%A9%20%26%20%E6%97%A5%E6%9C%AC%E8%AA%9E</code></p>
         </div>
     </div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>`;
+            } else if (id === 'uuid-generator') {
+                // Check if CSS is already loaded
+                if (!document.querySelector('style[data-tool="uuid-generator"]')) {
+                    const style = document.createElement('style');
+                    style.setAttribute('data-tool', 'uuid-generator');
+                    style.textContent = `/* UUID Generator Tool Styles */
+.uuid-generator-tabs {
+    width: 100%;
+    padding: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+    gap: 0;
+}
+
+.tab-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    min-width: 140px;
+    text-align: center;
+}
+
+.tab-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    z-index: 1;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--bg-primary);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tool Layout */
+.tool-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    min-height: 600px;
+}
+
+.tool-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.tool-panel h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.tool-panel h4 {
+    margin: 1rem 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Tool Controls */
+.tool-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.format-options,
+.validation-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.checkbox-label,
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"],
+.radio-label input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Quantity Control */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.quantity-control label {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.quantity-control input[type="number"] {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.quantity-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Radio Group */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Input/Output Areas */
+.input-area,
+.output-area {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.tool-textarea {
+    width: 100%;
+    min-height: 250px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.tool-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.tool-textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.uuid-output {
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    min-height: 100px;
+}
+
+.uuid-output-bulk {
+    min-height: 300px;
+}
+
+/* Tool Actions */
+.tool-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.tool-actions button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.tool-actions button:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+.tool-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Statistics Panel */
+.statistics-panel {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.stat-value {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+/* Examples Section */
+.examples-section {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.example-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.example-item {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+.example-item strong {
+    color: var(--text-primary);
+}
+
+/* Validation Result */
+.validation-result {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    min-height: 200px;
+    font-family: var(--font-mono);
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.validation-result .placeholder {
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.validation-result.success {
+    border-color: var(--success-color);
+    background: var(--success-bg);
+}
+
+.validation-result.error {
+    border-color: var(--error-color);
+    background: var(--error-bg);
+}
+
+.validation-success {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.validation-error {
+    color: var(--error-color);
+    font-weight: 600;
+}
+
+.validation-details {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.validation-detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.25rem 0;
+}
+
+/* Tool Status */
+.tool-status {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-tertiary, var(--bg-primary));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.tool-status span {
+    white-space: nowrap;
+}
+
+.tool-status .valid {
+    color: var(--success-color);
+    font-weight: 500;
+}
+
+.tool-status .invalid {
+    color: var(--error-color);
+    font-weight: 500;
+}
+
+/* Primary Button */
+.primary {
+    background: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color) !important;
+    font-weight: 500;
+}
+
+.primary:hover {
+    background: var(--accent-color-hover, var(--accent-color)) !important;
+    transform: translateY(-1px);
+}
+
+.primary:disabled {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+    transform: none !important;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 300px;
+}
+
+.progress-indicator.hidden {
+    display: none;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent-color);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-text {
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Status Display */
+#status-display {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    display: none;
+}
+
+#status-display.info {
+    background: var(--info-bg, #e3f2fd);
+    color: var(--info-color, #1976d2);
+    border: 1px solid var(--info-color, #1976d2);
+}
+
+#status-display.success {
+    background: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+#status-display.error {
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+/* Error Display */
+.error-display {
+    background: var(--error-bg);
+    border: 1px solid var(--error-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    color: var(--error-color);
+}
+
+.error-display.hidden {
+    display: none;
+}
+
+/* Auto Options */
+.auto-options {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.output-format-options {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tool-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .tab-btn {
+        min-width: 120px;
+        padding: 0.6rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .tool-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .tool-actions {
+        justify-content: center;
+    }
+    
+    .tool-status {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .progress-indicator {
+        min-width: 280px;
+        padding: 1.5rem;
+    }
+    
+    .quantity-control {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .stat-grid {
+        gap: 0.25rem;
+    }
+}`;
+                    document.head.appendChild(style);
+                }
+                
+                html = `<!-- UUID Generator Tool Tabs -->
+<div class="uuid-generator-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="single">Single Generator</button>
+        <button class="tab-btn" data-tab="bulk">Bulk Generator</button>
+        <button class="tab-btn" data-tab="validator">UUID Validator</button>
+    </div>
+    
+    <!-- Single Generator Tab -->
+    <div class="tab-content active" id="single-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Configuration</h3>
+                
+                <div class="tool-controls">
+                    <button id="generate-single-btn" class="primary">Generate UUID</button>
+                    
+                    <div class="format-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="include-hyphens-single" checked />
+                            Include hyphens
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="lowercase-single" checked />
+                            Lowercase
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="auto-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="auto-generate" />
+                        Generate on page load
+                    </label>
+                </div>
+                
+                <div class="statistics-panel">
+                    <h4>Statistics</h4>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Format:</span>
+                            <span class="stat-value" id="format-display">Standard UUID v4</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Characters:</span>
+                            <span class="stat-value" id="char-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Version:</span>
+                            <span class="stat-value">4 (Random)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Generated UUID</h3>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="uuid-output-single" 
+                        class="tool-textarea uuid-output" 
+                        placeholder="Generated UUID will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-single">📋 Copy</button>
+                    <button id="download-btn-single">💾 Download</button>
+                    <button id="clear-btn-single">🗑️ Clear</button>
+                    <button id="new-uuid-btn">🔄 New UUID</button>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Status: <span id="generation-status">Ready to generate</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bulk Generator Tab -->
+    <div class="tab-content" id="bulk-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Bulk Configuration</h3>
+                
+                <div class="quantity-control">
+                    <label for="bulk-quantity">Quantity:</label>
+                    <input type="number" id="bulk-quantity" min="1" max="1000" value="10" />
+                    <span class="quantity-label">UUIDs (1-1000)</span>
+                </div>
+                
+                <div class="tool-controls">
+                    <button id="generate-bulk-btn" class="primary">Generate Bulk</button>
+                </div>
+                
+                <div class="format-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-hyphens-bulk" checked />
+                        Include hyphens
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="lowercase-bulk" checked />
+                        Lowercase
+                    </label>
+                </div>
+                
+                <div class="output-format-options">
+                    <h4>Output Format</h4>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="output-format" value="lines" checked />
+                            Line separated
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="output-format" value="comma" />
+                            Comma separated
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="output-format" value="json" />
+                            JSON array
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Generated UUIDs</h3>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="uuid-output-bulk" 
+                        class="tool-textarea uuid-output-bulk" 
+                        placeholder="Generated UUIDs will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-bulk">📋 Copy</button>
+                    <button id="download-btn-bulk">💾 Download</button>
+                    <button id="clear-btn-bulk">🗑️ Clear</button>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Status: <span id="bulk-status">Ready to generate</span></span>
+                    <span>Size: <span id="bulk-size">0 characters</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- UUID Validator Tab -->
+    <div class="tab-content" id="validator-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>UUID Input</h3>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="uuid-input-validator" 
+                        class="tool-textarea" 
+                        placeholder="Enter UUID to validate...&#10;&#10;Examples:&#10;12345678-1234-4abc-def0-123456789abc&#10;123456781234def0123456789abc&#10;12345678-1234-4ABC-DEF0-123456789ABC"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-controls">
+                    <button id="validate-btn" class="primary">Validate UUID</button>
+                    
+                    <div class="validation-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="auto-validate" checked />
+                            Validate as you type
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="examples-section">
+                    <h4>Valid Examples</h4>
+                    <div class="example-list">
+                        <div class="example-item">
+                            <strong>Standard:</strong> 12345678-1234-4abc-def0-123456789abc
+                        </div>
+                        <div class="example-item">
+                            <strong>No hyphens:</strong> 123456781234abcdef0123456789abc
+                        </div>
+                        <div class="example-item">
+                            <strong>Uppercase:</strong> 12345678-1234-4ABC-DEF0-123456789ABC
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Validation Results</h3>
+                
+                <div class="validation-result" id="validation-result">
+                    <p class="placeholder">Enter a UUID to validate</p>
+                </div>
+                
+                <div class="tool-actions">
+                    <button id="copy-valid-btn">📋 Copy Valid UUID</button>
+                    <button id="generate-similar-btn">🔄 Generate Similar</button>
+                    <button id="clear-validator-btn">🗑️ Clear</button>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="validator-char-count">0 characters</span></span>
+                    <span>Valid: <span id="validation-status">Unknown</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Indicator -->
+<div id="progress-indicator" class="progress-indicator hidden">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Generating UUIDs...</div>
 </div>
 
 <!-- Status and Error Display -->

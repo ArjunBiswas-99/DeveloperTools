@@ -1,0 +1,230 @@
+<!-- UUID Generator Tool Tabs -->
+<div class="uuid-generator-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="single">Single Generator</button>
+        <button class="tab-btn" data-tab="bulk">Bulk Generator</button>
+        <button class="tab-btn" data-tab="validator">UUID Validator</button>
+    </div>
+    
+    <!-- Single Generator Tab -->
+    <div class="tab-content active" id="single-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Configuration</h3>
+                
+                <div class="tool-controls">
+                    <button id="generate-single-btn" class="primary">Generate UUID</button>
+                    
+                    <div class="format-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="include-hyphens-single" checked />
+                            Include hyphens
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="lowercase-single" checked />
+                            Lowercase
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="auto-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="auto-generate" />
+                        Generate on page load
+                    </label>
+                </div>
+                
+                <div class="statistics-panel">
+                    <h4>Statistics</h4>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Format:</span>
+                            <span class="stat-value" id="format-display">Standard UUID v4</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Characters:</span>
+                            <span class="stat-value" id="char-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Version:</span>
+                            <span class="stat-value">4 (Random)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Generated UUID</h3>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="uuid-output-single" 
+                        class="tool-textarea uuid-output" 
+                        placeholder="Generated UUID will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-single">📋 Copy</button>
+                    <button id="download-btn-single">💾 Download</button>
+                    <button id="clear-btn-single">🗑️ Clear</button>
+                    <button id="new-uuid-btn">🔄 New UUID</button>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Status: <span id="generation-status">Ready to generate</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bulk Generator Tab -->
+    <div class="tab-content" id="bulk-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Bulk Configuration</h3>
+                
+                <div class="quantity-control">
+                    <label for="bulk-quantity">Quantity:</label>
+                    <input type="number" id="bulk-quantity" min="1" max="1000" value="10" />
+                    <span class="quantity-label">UUIDs (1-1000)</span>
+                </div>
+                
+                <div class="tool-controls">
+                    <button id="generate-bulk-btn" class="primary">Generate Bulk</button>
+                </div>
+                
+                <div class="format-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-hyphens-bulk" checked />
+                        Include hyphens
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="lowercase-bulk" checked />
+                        Lowercase
+                    </label>
+                </div>
+                
+                <div class="output-format-options">
+                    <h4>Output Format</h4>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="output-format" value="lines" checked />
+                            Line separated
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="output-format" value="comma" />
+                            Comma separated
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="output-format" value="json" />
+                            JSON array
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Generated UUIDs</h3>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="uuid-output-bulk" 
+                        class="tool-textarea uuid-output-bulk" 
+                        placeholder="Generated UUIDs will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-bulk">📋 Copy</button>
+                    <button id="download-btn-bulk">💾 Download</button>
+                    <button id="clear-btn-bulk">🗑️ Clear</button>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Status: <span id="bulk-status">Ready to generate</span></span>
+                    <span>Size: <span id="bulk-size">0 characters</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- UUID Validator Tab -->
+    <div class="tab-content" id="validator-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>UUID Input</h3>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="uuid-input-validator" 
+                        class="tool-textarea" 
+                        placeholder="Enter UUID to validate...&#10;&#10;Examples:&#10;12345678-1234-4abc-def0-123456789abc&#10;123456781234def0123456789abc&#10;12345678-1234-4ABC-DEF0-123456789ABC"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-controls">
+                    <button id="validate-btn" class="primary">Validate UUID</button>
+                    
+                    <div class="validation-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="auto-validate" checked />
+                            Validate as you type
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="examples-section">
+                    <h4>Valid Examples</h4>
+                    <div class="example-list">
+                        <div class="example-item">
+                            <strong>Standard:</strong> 12345678-1234-4abc-def0-123456789abc
+                        </div>
+                        <div class="example-item">
+                            <strong>No hyphens:</strong> 123456781234abcdef0123456789abc
+                        </div>
+                        <div class="example-item">
+                            <strong>Uppercase:</strong> 12345678-1234-4ABC-DEF0-123456789ABC
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Validation Results</h3>
+                
+                <div class="validation-result" id="validation-result">
+                    <p class="placeholder">Enter a UUID to validate</p>
+                </div>
+                
+                <div class="tool-actions">
+                    <button id="copy-valid-btn">📋 Copy Valid UUID</button>
+                    <button id="generate-similar-btn">🔄 Generate Similar</button>
+                    <button id="clear-validator-btn">🗑️ Clear</button>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="validator-char-count">0 characters</span></span>
+                    <span>Valid: <span id="validation-status">Unknown</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Indicator -->
+<div id="progress-indicator" class="progress-indicator hidden">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Generating UUIDs...</div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>

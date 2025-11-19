@@ -26,8 +26,7 @@ const ToolsRegistry = {
             icon: '🔗',
             modulePath: '../tools/url-encoder-decoder/tool.js',
             category: 'encoders',
-            tags: ['url', 'encode', 'decode', 'percent'],
-            disabled: true
+            tags: ['url', 'encode', 'decode', 'percent']
         },
         {
             id: 'uuid-generator',
@@ -1321,6 +1320,525 @@ const ToolsRegistry = {
         <div class="progress-fill" id="progress-fill"></div>
     </div>
     <div class="progress-text" id="progress-text">Processing...</div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>`;
+            } else if (id === 'url-encoder-decoder') {
+                // Check if CSS is already loaded
+                if (!document.querySelector('style[data-tool="url-encoder-decoder"]')) {
+                    const style = document.createElement('style');
+                    style.setAttribute('data-tool', 'url-encoder-decoder');
+                    style.textContent = `/* URL Encoder/Decoder Tool Styles */
+.url-encoder-tabs {
+    width: 100%;
+    padding: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+    gap: 0;
+}
+
+.tab-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    min-width: 140px;
+    text-align: center;
+}
+
+.tab-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    z-index: 1;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--bg-primary);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tool Layout */
+.tool-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    min-height: 600px;
+}
+
+.tool-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.tool-panel h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Tool Controls */
+.tool-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.encoding-options,
+.decoding-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.option-hint {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    margin-top: 0.2rem;
+}
+
+/* Input Area */
+.input-area {
+    position: relative;
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.tool-textarea {
+    width: 100%;
+    min-height: 300px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.tool-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.tool-textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Tool Actions */
+.tool-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.tool-actions button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.tool-actions button:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+.tool-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Tool Status */
+.tool-status {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-tertiary, var(--bg-primary));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.tool-status span {
+    white-space: nowrap;
+}
+
+.tool-status .valid {
+    color: var(--success-color);
+    font-weight: 500;
+}
+
+.tool-status .invalid {
+    color: var(--error-color);
+    font-weight: 500;
+}
+
+/* Primary Button */
+.primary {
+    background: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color) !important;
+    font-weight: 500;
+}
+
+.primary:hover {
+    background: var(--accent-color-hover, var(--accent-color)) !important;
+    transform: translateY(-1px);
+}
+
+.primary:disabled {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+    transform: none !important;
+}
+
+/* Status Display */
+#status-display {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    display: none;
+}
+
+#status-display.info {
+    background: var(--info-bg, #e3f2fd);
+    color: var(--info-color, #1976d2);
+    border: 1px solid var(--info-color, #1976d2);
+}
+
+#status-display.success {
+    background: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+#status-display.error {
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+/* Examples Section */
+.examples-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.examples-section h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.example-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.example-item h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.example-item p {
+    margin: 0.25rem 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.example-item code {
+    font-family: var(--font-mono);
+    background: var(--bg-tertiary, var(--bg-secondary));
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* Error Display */
+.error-display {
+    background: var(--error-bg);
+    border: 1px solid var(--error-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    color: var(--error-color);
+}
+
+.error-display.hidden {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tool-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .tab-btn {
+        min-width: 120px;
+        padding: 0.6rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .tool-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .tool-actions {
+        justify-content: center;
+    }
+    
+    .tool-status {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+}`;
+                    document.head.appendChild(style);
+                }
+                
+                html = `<!-- URL Encoder/Decoder Tool Tabs -->
+<div class="url-encoder-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="encoder">URL Encoder</button>
+        <button class="tab-btn" data-tab="decoder">URL Decoder</button>
+    </div>
+    
+    <!-- URL Encoder Tab -->
+    <div class="tab-content active" id="encoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Input Text/URL</h3>
+                
+                <div class="tool-controls">
+                    <button id="encode-btn" class="primary">Encode URL</button>
+                    
+                    <div class="encoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="encode-component"> Encode as Component
+                            <span class="option-hint">Use encodeURIComponent() for query parameters</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-text-encoder" 
+                        class="tool-textarea" 
+                        placeholder="Enter text or URL to encode...&#10;&#10;Example:&#10;https://example.com/search?q=hello world&category=web development"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="input-length-encoder">0 characters</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>URL Encoded Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-encoder">📋 Copy</button>
+                    <button id="clear-btn-encoder">🗑️ Clear</button>
+                </div>
+                
+                <textarea 
+                    id="output-text-encoder" 
+                    class="tool-textarea" 
+                    placeholder="URL encoded output will appear here...&#10;&#10;Example:&#10;https://example.com/search?q=hello%20world&category=web%20development"
+                    readonly
+                    spellcheck="false"
+                ></textarea>
+                
+                <div class="tool-status">
+                    <span>Output: <span id="output-length-encoder">0 characters</span></span>
+                    <span>Changes: <span id="changes-encoder">No encoding needed</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- URL Decoder Tab -->
+    <div class="tab-content" id="decoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>URL Encoded Input</h3>
+                
+                <div class="tool-controls">
+                    <button id="decode-btn" class="primary">Decode URL</button>
+                    
+                    <div class="decoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="decode-component"> Decode as Component
+                            <span class="option-hint">Use decodeURIComponent() for query parameters</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-text-decoder" 
+                        class="tool-textarea" 
+                        placeholder="Enter URL encoded text to decode...&#10;&#10;Example:&#10;https://example.com/search?q=hello%20world&category=web%20development"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="input-length-decoder">0 characters</span></span>
+                    <span>Valid: <span id="validation-status-decoder">Unknown</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Decoded Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-decoder">📋 Copy</button>
+                    <button id="clear-btn-decoder">🗑️ Clear</button>
+                </div>
+                
+                <textarea 
+                    id="output-text-decoder" 
+                    class="tool-textarea" 
+                    placeholder="Decoded text output will appear here...&#10;&#10;Example:&#10;https://example.com/search?q=hello world&category=web development"
+                    readonly
+                    spellcheck="false"
+                ></textarea>
+                
+                <div class="tool-status">
+                    <span>Output: <span id="output-length-decoder">0 characters</span></span>
+                    <span>Changes: <span id="changes-decoder">No decoding needed</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Examples Section -->
+<div class="examples-section">
+    <h3>📚 Common Use Cases</h3>
+    <div class="examples-grid">
+        <div class="example-item">
+            <h4>Query Parameters</h4>
+            <p><strong>Original:</strong> <code>search?q=hello world</code></p>
+            <p><strong>Encoded:</strong> <code>search?q=hello%20world</code></p>
+        </div>
+        <div class="example-item">
+            <h4>Special Characters</h4>
+            <p><strong>Original:</strong> <code>path/file name & symbols.txt</code></p>
+            <p><strong>Encoded:</strong> <code>path/file%20name%20%26%20symbols.txt</code></p>
+        </div>
+        <div class="example-item">
+            <h4>Form Data</h4>
+            <p><strong>Original:</strong> <code>user@email.com</code></p>
+            <p><strong>Encoded:</strong> <code>user%40email.com</code></p>
+        </div>
+        <div class="example-item">
+            <h4>Unicode Characters</h4>
+            <p><strong>Original:</strong> <code>café & 日本語</code></p>
+            <p><strong>Encoded:</strong> <code>caf%C3%A9%20%26%20%E6%97%A5%E6%9C%AC%E8%AA%9E</code></p>
+        </div>
+    </div>
 </div>
 
 <!-- Status and Error Display -->

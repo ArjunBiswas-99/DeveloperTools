@@ -9,15 +9,15 @@ const Tool_json_validator = {
     
     // HTML template embedded to avoid CORS issues
     template: `<!-- JSON Tool Tabs -->
-<div class="json-tabs">
-    <div class="tab-nav">
-        <button class="tab-btn active" data-tab="validator">JSON Validator</button>
-        <button class="tab-btn" data-tab="beautifier">JSON Beautifier</button>
-        <button class="tab-btn" data-tab="minifier">JSON Minifier</button>
+<div class="subtabs-container">
+    <div class="subtabs-nav">
+        <button class="subtab-btn active" data-tab="validator">JSON Validator</button>
+        <button class="subtab-btn" data-tab="beautifier">JSON Beautifier</button>
+        <button class="subtab-btn" data-tab="minifier">JSON Minifier</button>
     </div>
     
     <!-- JSON Validator Tab -->
-    <div class="tab-content active" id="validator-tab">
+    <div class="subtab-content active" id="validator-tab">
         <div class="tool-layout">
             <div class="tool-panel">
                 <h3>Input JSON</h3>
@@ -61,7 +61,7 @@ const Tool_json_validator = {
     </div>
     
     <!-- JSON Beautifier Tab -->
-    <div class="tab-content" id="beautifier-tab">
+    <div class="subtab-content" id="beautifier-tab">
         <div class="tool-layout">
             <div class="tool-panel">
                 <h3>Input JSON</h3>
@@ -121,7 +121,7 @@ const Tool_json_validator = {
     </div>
     
     <!-- JSON Minifier Tab -->
-    <div class="tab-content" id="minifier-tab">
+    <div class="subtab-content" id="minifier-tab">
         <div class="tool-layout">
             <div class="tool-panel">
                 <h3>Input JSON</h3>
@@ -182,7 +182,7 @@ const Tool_json_validator = {
     
     // DOM elements for each tab
     elements: {
-        tabs: {},
+        subtabs: null,
         validator: {},
         beautifier: {},
         minifier: {},
@@ -221,9 +221,13 @@ const Tool_json_validator = {
             // Wait a moment for DOM to be ready
             await new Promise(resolve => setTimeout(resolve, 10));
             
-            // Get DOM elements
+            // Get DOM elements first
             Tool_json_validator.getElements(container);
             console.log('DOM elements retrieved');
+            
+            // Initialize subtabs with proper structure
+            Tool_json_validator.initializeSubTabs(container);
+            console.log('Subtabs initialized');
             
             // Bind events
             Tool_json_validator.bindEvents();
@@ -231,6 +235,9 @@ const Tool_json_validator = {
             
             // Load saved state
             Tool_json_validator.loadState();
+            
+            // Clear all inputs on mount to ensure clean state
+            Tool_json_validator.clearAllInputs();
             
             // Initialize stats for all tabs
             Tool_json_validator.updateStats('validator');
@@ -289,6 +296,61 @@ const Tool_json_validator = {
         return Promise.resolve();
     },
     
+    // Initialize SubTabs functionality
+    initializeSubTabs: (container) => {
+        try {
+            // Get subtab navigation buttons
+            const tabNavButtons = Array.from(DOM.qsAll('.subtab-btn', container));
+            
+            // Structure expected by SubTabs utility
+            const tabStructure = {
+                tabs: {
+                    nav: tabNavButtons,
+                    contents: {
+                        validator: DOM.qs('#validator-tab', container),
+                        beautifier: DOM.qs('#beautifier-tab', container),
+                        minifier: DOM.qs('#minifier-tab', container)
+                    }
+                }
+            };
+            
+            // Validate structure
+            if (!SubTabs.validateTabStructure(tabStructure)) {
+                console.error('Invalid tab structure for SubTabs');
+                return false;
+            }
+            
+            // Create switch callback function that calls SubTabs.switchTab
+            const switchTabCallback = (tabName) => {
+                // Use SubTabs.switchTab to handle the UI switching
+                SubTabs.switchTab(container, tabName, tabStructure);
+                
+                // Update our internal state
+                Tool_json_validator.state.activeTab = tabName;
+                Tool_json_validator.updateStats(tabName);
+                if (tabName !== 'validator') {
+                    Tool_json_validator.updateOutputStats(tabName);
+                }
+                console.log(`Switched to ${tabName} tab`);
+            };
+            
+            // Bind tab events
+            SubTabs.bindTabEvents(container, tabStructure, switchTabCallback);
+            
+            // Set initial active tab
+            SubTabs.setInitialTab(container, 'validator', tabStructure, switchTabCallback);
+            
+            // Store the tab structure for later use
+            Tool_json_validator.elements.tabs = tabStructure.tabs;
+            
+            console.log('SubTabs initialized successfully');
+            return true;
+        } catch (error) {
+            console.error('Error initializing SubTabs:', error);
+            return false;
+        }
+    },
+    
     // Get DOM elements for all tabs
     getElements: (container) => {
         if (!container) {
@@ -297,9 +359,8 @@ const Tool_json_validator = {
         }
         
         try {
-            // Tab navigation
+            // Get subtab contents
             Tool_json_validator.elements.tabs = {
-                nav: DOM.qsa('.tab-btn', container) || [],
                 contents: {
                     validator: DOM.qs('#validator-tab', container),
                     beautifier: DOM.qs('#beautifier-tab', container),
@@ -377,17 +438,7 @@ const Tool_json_validator = {
     // Bind event listeners for all tabs
     bindEvents: () => {
         try {
-            // Tab navigation
-            if (Tool_json_validator.elements.tabs.nav) {
-                Tool_json_validator.elements.tabs.nav.forEach(btn => {
-                    if (btn) {
-                        DOM.on(btn, 'click', (e) => {
-                            const tabName = e.target.getAttribute('data-tab');
-                            Tool_json_validator.switchTab(tabName);
-                        });
-                    }
-                });
-            }
+            // Tab navigation is handled by SubTabs utility
             
             // Validator tab events
             const validator = Tool_json_validator.elements.validator;
@@ -449,26 +500,45 @@ const Tool_json_validator = {
         }
     },
     
-    // Switch between tabs
+    // Clear all inputs for the current tab
+    clearAllInputs: () => {
+        const currentTab = Tool_json_validator.state.activeTab;
+        const elements = Tool_json_validator.elements[currentTab];
+        
+        if (elements) {
+            // Clear input text area
+            if (elements.inputJson) {
+                elements.inputJson.value = '';
+                elements.inputJson.classList.remove('valid', 'invalid');
+            }
+            
+            // Clear output text area
+            if (elements.outputJson) {
+                elements.outputJson.value = '';
+            }
+            
+            // Reset validation result for validator tab
+            if (currentTab === 'validator' && elements.validationResult) {
+                elements.validationResult.innerHTML = '<p class="placeholder">Click "Validate JSON" to check your JSON syntax</p>';
+                elements.validationResult.className = 'validation-result';
+            }
+            
+            // Update stats
+            Tool_json_validator.updateStats(currentTab);
+            if (currentTab !== 'validator') {
+                Tool_json_validator.updateOutputStats(currentTab);
+            }
+            
+            // Hide status messages
+            Tool_json_validator.hideStatus();
+            Tool_json_validator.hideError();
+        }
+    },
+
+    // Switch between tabs (now handled by SubTabs utility)
     switchTab: (tabName) => {
-        // Update tab buttons
-        Tool_json_validator.elements.tabs.nav.forEach(btn => {
-            const isActive = btn.getAttribute('data-tab') === tabName;
-            btn.classList.toggle('active', isActive);
-        });
-        
-        // Update tab contents
-        Object.entries(Tool_json_validator.elements.tabs.contents).forEach(([tab, content]) => {
-            content.classList.toggle('active', tab === tabName);
-        });
-        
-        // Update state
-        Tool_json_validator.state.activeTab = tabName;
-        
-        // Update stats for the active tab
-        Tool_json_validator.updateStats(tabName);
-        if (tabName !== 'validator') {
-            Tool_json_validator.updateOutputStats(tabName);
+        if (Tool_json_validator.elements.subtabs) {
+            Tool_json_validator.elements.subtabs.switchTo(tabName);
         }
     },
     
@@ -476,161 +546,146 @@ const Tool_json_validator = {
     handleInput: (tabName) => {
         Tool_json_validator.updateStats(tabName);
         Tool_json_validator.hideStatus();
+        Tool_json_validator.hideError();
         
-        // Auto-validate if preference is set and this is the validator tab
-        if (tabName === 'validator') {
-            const preferences = Storage?.getPreferences?.() || {};
-            if (preferences.autoValidate) {
-                clearTimeout(Tool_json_validator.autoValidateTimeout);
-                Tool_json_validator.autoValidateTimeout = setTimeout(() => {
-                    Tool_json_validator.validate(true); // Silent validation
-                }, 500);
-            }
+        // Auto-validation/beautification if preference is set
+        const preferences = Storage?.getPreferences?.() || {};
+        if (preferences.autoProcess) {
+            clearTimeout(Tool_json_validator.autoProcessTimeout);
+            Tool_json_validator.autoProcessTimeout = setTimeout(() => {
+                if (tabName === 'validator') {
+                    Tool_json_validator.validate(true);
+                } else if (tabName === 'beautifier') {
+                    Tool_json_validator.beautify(true);
+                } else if (tabName === 'minifier') {
+                    Tool_json_validator.minify(true);
+                }
+            }, 500);
         }
     },
     
-    // Validate JSON (validator tab)
+    // Validate JSON
     validate: (silent = false) => {
         const input = Tool_json_validator.elements.validator.inputJson.value.trim();
         const resultEl = Tool_json_validator.elements.validator.validationResult;
         
         if (!input) {
-            resultEl.innerHTML = '<p class="placeholder">Please enter JSON to validate</p>';
-            resultEl.className = 'validation-result';
-            return false;
+            if (!silent) Tool_json_validator.showStatus('Please enter JSON to validate', 'info');
+            return;
         }
         
         try {
-            const parsed = JSON.parse(input);
-            Tool_json_validator.state.lastValidJson.validator = parsed;
-            
-            // Update UI
-            Tool_json_validator.elements.validator.inputJson.classList.remove('invalid');
-            Tool_json_validator.elements.validator.inputJson.classList.add('valid');
-            Tool_json_validator.hideError();
-            
-            // Show success result
-            const jsonKeys = Object.keys(parsed).length;
-            const jsonType = Array.isArray(parsed) ? 'Array' : 'Object';
-            
-            resultEl.innerHTML = `
-                <div class="validation-success">✓ Valid JSON</div>
-                <div class="validation-details">
-                    Type: ${jsonType}<br>
-                    ${jsonType === 'Array' ? 'Items' : 'Keys'}: ${jsonKeys}<br>
-                    Size: ${input.length.toLocaleString()} characters
-                </div>
-            `;
+            JSON.parse(input);
+            resultEl.innerHTML = '<div class="success"><strong>✓ Valid JSON</strong><p>Your JSON syntax is correct!</p></div>';
             resultEl.className = 'validation-result success';
             
-            if (!silent && window.Toasts) {
-                Toasts.success('JSON is valid');
+            if (!silent) {
+                Tool_json_validator.showStatus('✓ JSON is valid', 'success');
+                if (window.Toasts) {
+                    Toasts.success('JSON is valid');
+                }
             }
-            
-            return true;
         } catch (error) {
-            // Update UI
-            Tool_json_validator.elements.validator.inputJson.classList.remove('valid');
-            Tool_json_validator.elements.validator.inputJson.classList.add('invalid');
-            
-            // Show error result
-            let errorMessage = error.message;
-            let lineInfo = '';
-            
-            // Parse error position if available
-            const positionMatch = error.message.match(/position (\d+)/i);
-            if (positionMatch) {
-                const position = parseInt(positionMatch[1]);
-                const beforeError = input.substring(0, position);
-                const lines = beforeError.split('\n');
-                const line = lines.length;
-                const column = lines[lines.length - 1].length + 1;
-                lineInfo = `Line ${line}, Column ${column}`;
-            }
-            
-            resultEl.innerHTML = `
-                <div class="validation-error">✗ Invalid JSON</div>
-                <div class="validation-details">
-                    Error: ${errorMessage}
-                    ${lineInfo ? `<br>Location: ${lineInfo}` : ''}
-                </div>
-            `;
+            resultEl.innerHTML = `<div class="error"><strong>✗ Invalid JSON</strong><p>${error.message}</p></div>`;
             resultEl.className = 'validation-result error';
             
-            if (!silent && window.Toasts) {
-                Toasts.error('Invalid JSON');
+            if (!silent) {
+                Tool_json_validator.showStatus('JSON validation failed', 'error');
+                if (window.Toasts) {
+                    Toasts.error('Invalid JSON');
+                }
             }
-            
-            return false;
         }
     },
     
-    // Beautify JSON (beautifier tab)
-    beautify: () => {
+    // Beautify JSON
+    beautify: (silent = false) => {
         const input = Tool_json_validator.elements.beautifier.inputJson.value.trim();
+        const indentValue = Tool_json_validator.elements.beautifier.indentSelect.value;
         
         if (!input) {
-            Tool_json_validator.showStatus('Please enter JSON to beautify', 'info');
+            if (!silent) Tool_json_validator.showStatus('Please enter JSON to beautify', 'info');
             return;
         }
         
         try {
             const parsed = JSON.parse(input);
-            Tool_json_validator.state.lastValidJson.beautifier = parsed;
+            const indent = indentValue === '\\t' ? '\t' : parseInt(indentValue);
+            const beautified = JSON.stringify(parsed, null, indent);
             
-            const indent = Tool_json_validator.elements.beautifier.indentSelect.value;
-            const indentValue = indent === '\t' ? '\t' : parseInt(indent);
-            
-            const beautified = JSON.stringify(parsed, null, indentValue);
             Tool_json_validator.elements.beautifier.outputJson.value = beautified;
-            
             Tool_json_validator.updateOutputStats('beautifier');
-            Tool_json_validator.showStatus('✓ JSON beautified', 'success');
             
-            if (window.Toasts) {
-                Toasts.success('JSON beautified');
+            if (!silent) {
+                Tool_json_validator.showStatus('✓ JSON beautified successfully', 'success');
+                if (window.Toasts) {
+                    Toasts.success('JSON beautified');
+                }
             }
         } catch (error) {
-            Tool_json_validator.showStatus('Error: Invalid JSON - ' + error.message, 'error');
-            if (window.Toasts) {
+            Tool_json_validator.showError('Invalid JSON: ' + error.message);
+            if (!silent && window.Toasts) {
                 Toasts.error('Invalid JSON');
             }
         }
     },
     
-    // Minify JSON (minifier tab)
-    minify: () => {
+    // Minify JSON
+    minify: (silent = false) => {
         const input = Tool_json_validator.elements.minifier.inputJson.value.trim();
         
         if (!input) {
-            Tool_json_validator.showStatus('Please enter JSON to minify', 'info');
+            if (!silent) Tool_json_validator.showStatus('Please enter JSON to minify', 'info');
             return;
         }
         
         try {
             const parsed = JSON.parse(input);
-            Tool_json_validator.state.lastValidJson.minifier = parsed;
-            
             const minified = JSON.stringify(parsed);
+            
             Tool_json_validator.elements.minifier.outputJson.value = minified;
-            
             Tool_json_validator.updateOutputStats('minifier');
-            Tool_json_validator.showStatus('✓ JSON minified', 'success');
             
-            if (window.Toasts) {
-                Toasts.success('JSON minified');
+            if (!silent) {
+                Tool_json_validator.showStatus('✓ JSON minified successfully', 'success');
+                if (window.Toasts) {
+                    Toasts.success('JSON minified');
+                }
             }
         } catch (error) {
-            Tool_json_validator.showStatus('Error: Invalid JSON - ' + error.message, 'error');
-            if (window.Toasts) {
+            Tool_json_validator.showError('Invalid JSON: ' + error.message);
+            if (!silent && window.Toasts) {
                 Toasts.error('Invalid JSON');
             }
         }
+    },
+    
+    // Handle file upload
+    handleFileUpload: (e, tabName) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const elements = Tool_json_validator.elements[tabName];
+            elements.inputJson.value = event.target.result;
+            Tool_json_validator.handleInput(tabName);
+            
+            if (window.Toasts) {
+                Toasts.success(`File "${file.name}" loaded`);
+            }
+        };
+        reader.readAsText(file);
+        
+        // Clear the file input
+        e.target.value = '';
     },
     
     // Copy output to clipboard
     copyOutput: async (tabName) => {
-        const output = Tool_json_validator.elements[tabName].outputJson.value;
+        const elements = Tool_json_validator.elements[tabName];
+        const output = elements.outputJson.value;
+        
         if (!output) {
             if (window.Toasts) {
                 Toasts.warning('No output to copy');
@@ -645,7 +700,9 @@ const Tool_json_validator = {
     
     // Download output as file
     downloadOutput: (tabName) => {
-        const output = Tool_json_validator.elements[tabName].outputJson.value;
+        const elements = Tool_json_validator.elements[tabName];
+        const output = elements.outputJson.value;
+        
         if (!output) {
             if (window.Toasts) {
                 Toasts.warning('No output to download');
@@ -653,8 +710,9 @@ const Tool_json_validator = {
             return;
         }
         
+        const filename = tabName === 'beautifier' ? 'beautified.json' : 'minified.json';
+        
         if (window.Download) {
-            const filename = Download.generateFilename(`${tabName}-output`, '.json');
             Download.downloadWithToast(filename, output, 'application/json');
         }
     },
@@ -663,16 +721,13 @@ const Tool_json_validator = {
     clear: (tabName) => {
         const elements = Tool_json_validator.elements[tabName];
         
-        elements.inputJson.value = '';
-        elements.inputJson.classList.remove('valid', 'invalid');
-        
-        if (elements.outputJson) {
-            elements.outputJson.value = '';
-        }
-        
         if (tabName === 'validator') {
+            elements.inputJson.value = '';
             elements.validationResult.innerHTML = '<p class="placeholder">Click "Validate JSON" to check your JSON syntax</p>';
             elements.validationResult.className = 'validation-result';
+        } else {
+            elements.inputJson.value = '';
+            elements.outputJson.value = '';
         }
         
         Tool_json_validator.hideStatus();
@@ -688,34 +743,7 @@ const Tool_json_validator = {
         }
     },
     
-    // Handle file upload for specific tab
-    handleFileUpload: (e, tabName) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            Tool_json_validator.elements[tabName].inputJson.value = event.target.result;
-            Tool_json_validator.handleInput(tabName);
-            
-            if (window.Toasts) {
-                Toasts.success(`File "${file.name}" loaded`);
-            }
-        };
-        
-        reader.onerror = () => {
-            if (window.Toasts) {
-                Toasts.error('Failed to read file');
-            }
-        };
-        
-        reader.readAsText(file);
-        
-        // Clear the file input
-        e.target.value = '';
-    },
-    
-    // Update input statistics for specific tab
+    // Update input statistics
     updateStats: (tabName) => {
         const elements = Tool_json_validator.elements[tabName];
         const input = elements.inputJson.value;
@@ -726,7 +754,7 @@ const Tool_json_validator = {
         elements.inputLines.textContent = lines.toLocaleString();
     },
     
-    // Update output statistics for specific tab
+    // Update output statistics
     updateOutputStats: (tabName) => {
         const elements = Tool_json_validator.elements[tabName];
         const input = elements.inputJson.value;
@@ -735,26 +763,16 @@ const Tool_json_validator = {
         
         elements.outputChars.textContent = outputChars.toLocaleString();
         
-        // Calculate size difference
-        const inputSize = input.length;
-        const outputSize = outputChars;
-        const diff = outputSize - inputSize;
-        const diffPercent = inputSize > 0 ? ((diff / inputSize) * 100).toFixed(1) : 0;
+        // Calculate size change
+        const inputSize = new Blob([input]).size;
+        const outputSize = new Blob([output]).size;
+        const changePercent = inputSize > 0 ? (((outputSize - inputSize) / inputSize) * 100).toFixed(1) : 0;
         
-        let diffText, diffClass;
-        if (diff > 0) {
-            diffText = `+${diff} (+${diffPercent}%)`;
-            diffClass = 'larger';
-        } else if (diff < 0) {
-            diffText = `${diff} (${diffPercent}%)`;
-            diffClass = 'smaller';
-        } else {
-            diffText = 'No change';
-            diffClass = 'same';
+        if (tabName === 'beautifier') {
+            elements.sizeDiff.textContent = outputSize > inputSize ? `+${changePercent}%` : `${changePercent}%`;
+        } else if (tabName === 'minifier') {
+            elements.sizeDiff.textContent = outputSize < inputSize ? `-${Math.abs(changePercent)}%` : `+${changePercent}%`;
         }
-        
-        elements.sizeDiff.textContent = diffText;
-        elements.sizeDiff.className = diffClass;
     },
     
     // Show status message
@@ -762,6 +780,7 @@ const Tool_json_validator = {
         const statusEl = Tool_json_validator.elements.shared.statusDisplay;
         statusEl.textContent = message;
         statusEl.className = type;
+        statusEl.style.display = 'block';
     },
     
     // Hide status message
@@ -771,9 +790,17 @@ const Tool_json_validator = {
         statusEl.className = '';
     },
     
-    // Hide error display
+    // Show error message
+    showError: (message) => {
+        const errorEl = Tool_json_validator.elements.shared.errorDisplay;
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+    },
+    
+    // Hide error message
     hideError: () => {
-        Tool_json_validator.elements.shared.errorDisplay.classList.add('hidden');
+        const errorEl = Tool_json_validator.elements.shared.errorDisplay;
+        errorEl.classList.add('hidden');
     },
     
     // Load saved state
@@ -783,21 +810,24 @@ const Tool_json_validator = {
         const state = Storage.getToolState('json-validator');
         
         // Load content for each tab
-        ['validator', 'beautifier', 'minifier'].forEach(tabName => {
-            if (state[`${tabName}_input`]) {
-                Tool_json_validator.elements[tabName].inputJson.value = state[`${tabName}_input`];
-                Tool_json_validator.updateStats(tabName);
-            }
-        });
+        if (state.validator_input) {
+            Tool_json_validator.elements.validator.inputJson.value = state.validator_input;
+            Tool_json_validator.updateStats('validator');
+        }
         
-        // Load beautifier indent setting
-        if (state.indent && Tool_json_validator.elements.beautifier.indentSelect) {
-            Tool_json_validator.elements.beautifier.indentSelect.value = state.indent;
+        if (state.beautifier_input) {
+            Tool_json_validator.elements.beautifier.inputJson.value = state.beautifier_input;
+            Tool_json_validator.updateStats('beautifier');
+        }
+        
+        if (state.minifier_input) {
+            Tool_json_validator.elements.minifier.inputJson.value = state.minifier_input;
+            Tool_json_validator.updateStats('minifier');
         }
         
         // Load active tab
-        if (state.activeTab) {
-            Tool_json_validator.switchTab(state.activeTab);
+        if (state.activeTab && Tool_json_validator.elements.subtabs) {
+            Tool_json_validator.elements.subtabs.switchTo(state.activeTab);
         }
     },
     
@@ -807,16 +837,10 @@ const Tool_json_validator = {
         
         const state = {
             activeTab: Tool_json_validator.state.activeTab,
-            indent: Tool_json_validator.elements.beautifier.indentSelect?.value || '2'
+            validator_input: Tool_json_validator.elements.validator?.inputJson?.value || '',
+            beautifier_input: Tool_json_validator.elements.beautifier?.inputJson?.value || '',
+            minifier_input: Tool_json_validator.elements.minifier?.inputJson?.value || ''
         };
-        
-        // Save content for each tab
-        ['validator', 'beautifier', 'minifier'].forEach(tabName => {
-            const elements = Tool_json_validator.elements[tabName];
-            if (elements?.inputJson) {
-                state[`${tabName}_input`] = elements.inputJson.value || '';
-            }
-        });
         
         Storage.setToolState('json-validator', state);
     }

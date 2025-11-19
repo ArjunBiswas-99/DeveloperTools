@@ -5,67 +5,9 @@
     overflow: hidden;
 }
 
-/* Tab Navigation */
+/* JSON Tool Container */
 .json-tabs {
     width: 100%;
-}
-
-.tab-nav {
-    display: flex;
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 1rem;
-    gap: 0;
-}
-
-.tab-btn {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-bottom: none;
-    color: var(--text-secondary);
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-radius: 8px 8px 0 0;
-    position: relative;
-    min-width: 120px;
-}
-
-.tab-btn:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-}
-
-.tab-btn.active {
-    background: var(--bg-primary);
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-    z-index: 1;
-}
-
-.tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--bg-primary);
-}
-
-/* Tab Content */
-.tab-content {
-    display: none;
-    animation: fadeIn 0.3s ease;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* SIDE-BY-SIDE LAYOUT FOR JSON BEAUTIFIER */
@@ -91,10 +33,10 @@
     tab-size: 2;
     white-space: pre;
     word-wrap: break-word;
-    border: 2px solid #e0e6ed;
+    border: 2px solid var(--border-light);
     border-radius: 12px;
-    background: #ffffff;
-    color: #2d3748;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     padding: 1.5rem;
     resize: none;
     min-height: 400px;
@@ -195,10 +137,10 @@
     tab-size: 2;
     white-space: pre;
     word-wrap: break-word;
-    border: 2px solid #e0e6ed;
+    border: 2px solid var(--border-light);
     border-radius: 12px;
-    background: #ffffff;
-    color: #2d3748;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     padding: 1.5rem;
     resize: none;
     min-height: 400px;

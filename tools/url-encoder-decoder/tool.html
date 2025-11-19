@@ -1,0 +1,149 @@
+<!-- URL Encoder/Decoder Tool Tabs -->
+<div class="url-encoder-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="encoder">URL Encoder</button>
+        <button class="tab-btn" data-tab="decoder">URL Decoder</button>
+    </div>
+    
+    <!-- URL Encoder Tab -->
+    <div class="tab-content active" id="encoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Input Text/URL</h3>
+                
+                <div class="tool-controls">
+                    <button id="encode-btn" class="primary">Encode URL</button>
+                    
+                    <div class="encoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="encode-component"> Encode as Component
+                            <span class="option-hint">Use encodeURIComponent() for query parameters</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-text-encoder" 
+                        class="tool-textarea" 
+                        placeholder="Enter text or URL to encode...&#10;&#10;Example:&#10;https://example.com/search?q=hello world&category=web development"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="input-length-encoder">0 characters</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>URL Encoded Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-encoder">📋 Copy</button>
+                    <button id="clear-btn-encoder">🗑️ Clear</button>
+                </div>
+                
+                <textarea 
+                    id="output-text-encoder" 
+                    class="tool-textarea" 
+                    placeholder="URL encoded output will appear here...&#10;&#10;Example:&#10;https://example.com/search?q=hello%20world&category=web%20development"
+                    readonly
+                    spellcheck="false"
+                ></textarea>
+                
+                <div class="tool-status">
+                    <span>Output: <span id="output-length-encoder">0 characters</span></span>
+                    <span>Changes: <span id="changes-encoder">No encoding needed</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- URL Decoder Tab -->
+    <div class="tab-content" id="decoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>URL Encoded Input</h3>
+                
+                <div class="tool-controls">
+                    <button id="decode-btn" class="primary">Decode URL</button>
+                    
+                    <div class="decoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="decode-component"> Decode as Component
+                            <span class="option-hint">Use decodeURIComponent() for query parameters</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-text-decoder" 
+                        class="tool-textarea" 
+                        placeholder="Enter URL encoded text to decode...&#10;&#10;Example:&#10;https://example.com/search?q=hello%20world&category=web%20development"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="input-length-decoder">0 characters</span></span>
+                    <span>Valid: <span id="validation-status-decoder">Unknown</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Decoded Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-decoder">📋 Copy</button>
+                    <button id="clear-btn-decoder">🗑️ Clear</button>
+                </div>
+                
+                <textarea 
+                    id="output-text-decoder" 
+                    class="tool-textarea" 
+                    placeholder="Decoded text output will appear here...&#10;&#10;Example:&#10;https://example.com/search?q=hello world&category=web development"
+                    readonly
+                    spellcheck="false"
+                ></textarea>
+                
+                <div class="tool-status">
+                    <span>Output: <span id="output-length-decoder">0 characters</span></span>
+                    <span>Changes: <span id="changes-decoder">No decoding needed</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Examples Section -->
+<div class="examples-section">
+    <h3>📚 Common Use Cases</h3>
+    <div class="examples-grid">
+        <div class="example-item">
+            <h4>Query Parameters</h4>
+            <p><strong>Original:</strong> <code>search?q=hello world</code></p>
+            <p><strong>Encoded:</strong> <code>search?q=hello%20world</code></p>
+        </div>
+        <div class="example-item">
+            <h4>Special Characters</h4>
+            <p><strong>Original:</strong> <code>path/file name & symbols.txt</code></p>
+            <p><strong>Encoded:</strong> <code>path/file%20name%20%26%20symbols.txt</code></p>
+        </div>
+        <div class="example-item">
+            <h4>Form Data</h4>
+            <p><strong>Original:</strong> <code>user@email.com</code></p>
+            <p><strong>Encoded:</strong> <code>user%40email.com</code></p>
+        </div>
+        <div class="example-item">
+            <h4>Unicode Characters</h4>
+            <p><strong>Original:</strong> <code>café & 日本語</code></p>
+            <p><strong>Encoded:</strong> <code>caf%C3%A9%20%26%20%E6%97%A5%E6%9C%AC%E8%AA%9E</code></p>
+        </div>
+    </div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>

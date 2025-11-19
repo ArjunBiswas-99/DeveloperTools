@@ -443,16 +443,36 @@ const Tool_base64 = {
     // Bind event listeners for all tabs
     bindEvents: () => {
         try {
-            // Tab navigation
-            if (Tool_base64.elements.tabs.nav) {
-                Tool_base64.elements.tabs.nav.forEach(btn => {
-                    if (btn) {
-                        DOM.on(btn, 'click', (e) => {
-                            const tabName = e.target.getAttribute('data-tab');
-                            Tool_base64.switchTab(tabName);
-                        });
+            // Tab navigation using SubTabs utility
+            if (window.SubTabs && Tool_base64.elements.tabs && Tool_base64.elements.tabs.nav) {
+                // First validate the tab structure
+                if (SubTabs.validateTabStructure(Tool_base64.elements)) {
+                    // Bind tab events with correct container
+                    const container = document.querySelector('.base64-encoder-decoder');
+                    if (container) {
+                        SubTabs.bindTabEvents(
+                            container,
+                            Tool_base64.elements,
+                            Tool_base64.switchTab
+                        );
+                        
+                        // Set initial tab
+                        SubTabs.setInitialTab(
+                            container,
+                            'encoder',
+                            Tool_base64.elements,
+                            Tool_base64.switchTab
+                        );
+                    } else {
+                        console.warn('Base64 container not found, using fallback tab switching');
+                        Tool_base64.bindTabEventsFallback();
                     }
-                });
+                } else {
+                    console.warn('Base64 tab structure invalid, using fallback');
+                    Tool_base64.bindTabEventsFallback();
+                }
+            } else {
+                Tool_base64.bindTabEventsFallback();
             }
             
             // Encoder tab events
@@ -499,27 +519,148 @@ const Tool_base64 = {
             console.log('Event listeners bound successfully');
         } catch (error) {
             console.error('Error binding events:', error);
+            // Try fallback method
+            Tool_base64.bindTabEventsFallback();
+        }
+    },
+
+    // Fallback method for binding tab events
+    bindTabEventsFallback: () => {
+        try {
+            console.log('Using fallback tab event binding for Base64 tool');
+            
+            // Manual tab event binding
+            Tool_base64.elements.tabs.nav.forEach(btn => {
+                if (btn) {
+                    DOM.on(btn, 'click', (e) => {
+                        e.preventDefault();
+                        const tabName = e.target.getAttribute('data-tab');
+                        if (tabName) {
+                            Tool_base64.switchTab(tabName);
+                        }
+                    });
+                }
+            });
+            
+            // Set initial active tab
+            Tool_base64.switchTab('encoder');
+            
+            console.log('Fallback tab events bound successfully');
+        } catch (error) {
+            console.error('Error in fallback tab binding:', error);
         }
     },
     
-    // Switch between tabs
+    // Clear all inputs for the current tab
+    clearAllInputs: () => {
+        const currentTab = Tool_base64.state.activeTab;
+        let elements = null;
+        
+        // Get the elements for the current tab
+        if (currentTab === 'encoder') {
+            elements = Tool_base64.elements.encoder;
+        } else if (currentTab === 'decoder') {
+            elements = Tool_base64.elements.decoder;
+        } else if (currentTab === 'fileEncoder') {
+            elements = Tool_base64.elements.fileEncoder;
+        }
+        
+        if (elements) {
+            // Clear input areas
+            if (currentTab === 'encoder') {
+                if (elements.inputText) {
+                    elements.inputText.value = '';
+                }
+                if (elements.outputBase64) {
+                    elements.outputBase64.value = '';
+                }
+            } else if (currentTab === 'decoder') {
+                if (elements.inputBase64) {
+                    elements.inputBase64.value = '';
+                }
+                if (elements.outputText) {
+                    elements.outputText.value = '';
+                }
+                // Reset validation indicator
+                if (elements.base64Valid) {
+                    elements.base64Valid.textContent = 'Unknown';
+                    elements.base64Valid.className = '';
+                }
+            } else if (currentTab === 'fileEncoder') {
+                if (elements.outputFileBase64) {
+                    elements.outputFileBase64.value = '';
+                }
+                // Clear selected file
+                Tool_base64.state.selectedFile = null;
+                Tool_base64.updateFileInfo();
+            }
+            
+            // Update stats for the current tab
+            Tool_base64.updateStats(currentTab);
+            if (currentTab !== 'fileEncoder') {
+                Tool_base64.updateOutputStats(currentTab);
+            }
+            
+            // Hide status messages
+            Tool_base64.hideStatus();
+        }
+    },
+
+    // Switch between tabs using SubTabs utility
     switchTab: (tabName) => {
-        // Update tab buttons
-        Tool_base64.elements.tabs.nav.forEach(btn => {
-            const isActive = btn.getAttribute('data-tab') === tabName;
-            btn.classList.toggle('active', isActive);
-        });
+        console.log(`Base64: Switching to tab '${tabName}'`);
         
-        // Update tab contents
-        Object.entries(Tool_base64.elements.tabs.contents).forEach(([tab, content]) => {
-            content.classList.toggle('active', tab === tabName);
-        });
+        // Clear inputs from the current tab before switching
+        Tool_base64.clearAllInputs();
         
-        // Update state
-        Tool_base64.state.activeTab = tabName;
+        // Map the data-tab attribute values to internal tab names
+        let internalTabName = tabName;
+        if (tabName === 'file-encoder') {
+            internalTabName = 'fileEncoder';
+        }
         
-        // Update stats for the active tab
-        Tool_base64.updateStats(tabName);
+        try {
+            // Manual tab switching method (more reliable)
+            Tool_base64.elements.tabs.nav.forEach(btn => {
+                if (btn && btn.classList) {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Find and activate the correct tab button
+            const activeBtn = Tool_base64.elements.tabs.nav.find(btn => 
+                btn && btn.getAttribute('data-tab') === tabName
+            );
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                console.log(`Base64: Activated tab button for '${tabName}'`);
+            } else {
+                console.warn(`Base64: Could not find tab button for '${tabName}'`);
+            }
+            
+            // Update tab contents
+            Object.entries(Tool_base64.elements.tabs.contents).forEach(([tab, content]) => {
+                if (content && content.classList) {
+                    const isActive = tab === internalTabName;
+                    content.classList.toggle('active', isActive);
+                    console.log(`Base64: Tab content '${tab}' active: ${isActive}`);
+                }
+            });
+            
+            // Update state
+            Tool_base64.state.activeTab = internalTabName;
+            
+            // Clear inputs in the new tab as well
+            Tool_base64.clearAllInputs();
+            
+            // Update stats for the active tab
+            Tool_base64.updateStats(internalTabName);
+            
+            console.log(`Base64: Successfully switched to tab '${tabName}' (internal: '${internalTabName}')`);
+            
+        } catch (error) {
+            console.error('Base64: Error in switchTab:', error);
+        }
     },
     
     // Handle input changes for specific tab

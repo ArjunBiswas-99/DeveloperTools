@@ -377,16 +377,22 @@ const Tool_json_validator = {
     // Bind event listeners for all tabs
     bindEvents: () => {
         try {
-            // Tab navigation
-            if (Tool_json_validator.elements.tabs.nav) {
-                Tool_json_validator.elements.tabs.nav.forEach(btn => {
-                    if (btn) {
-                        DOM.on(btn, 'click', (e) => {
-                            const tabName = e.target.getAttribute('data-tab');
-                            Tool_json_validator.switchTab(tabName);
-                        });
-                    }
-                });
+            // Tab navigation using SubTabs utility
+            if (window.SubTabs && Tool_json_validator.elements.tabs) {
+                const container = document.querySelector('.json-validator');
+                SubTabs.bindTabEvents(
+                    container,
+                    Tool_json_validator.elements,
+                    Tool_json_validator.switchTab
+                );
+                
+                // Set initial default tab (validator)
+                SubTabs.setInitialTab(
+                    container,
+                    'validator',
+                    Tool_json_validator.elements,
+                    Tool_json_validator.switchTab
+                );
             }
             
             // Validator tab events
@@ -449,26 +455,63 @@ const Tool_json_validator = {
         }
     },
     
-    // Switch between tabs
+    // Switch between tabs using SubTabs utility
     switchTab: (tabName) => {
-        // Update tab buttons
-        Tool_json_validator.elements.tabs.nav.forEach(btn => {
-            const isActive = btn.getAttribute('data-tab') === tabName;
-            btn.classList.toggle('active', isActive);
-        });
-        
-        // Update tab contents
-        Object.entries(Tool_json_validator.elements.tabs.contents).forEach(([tab, content]) => {
-            content.classList.toggle('active', tab === tabName);
-        });
-        
-        // Update state
-        Tool_json_validator.state.activeTab = tabName;
-        
-        // Update stats for the active tab
-        Tool_json_validator.updateStats(tabName);
-        if (tabName !== 'validator') {
-            Tool_json_validator.updateOutputStats(tabName);
+        // Use SubTabs utility for proper tab switching
+        if (window.SubTabs) {
+            const container = document.querySelector('.json-validator');
+            const success = SubTabs.switchTab(container, tabName, Tool_json_validator.elements);
+            
+            if (success) {
+                // Update state
+                Tool_json_validator.state.activeTab = tabName;
+                
+                // Update stats for the active tab
+                Tool_json_validator.updateStats(tabName);
+                if (tabName !== 'validator') {
+                    Tool_json_validator.updateOutputStats(tabName);
+                }
+            } else {
+                console.warn('SubTabs.switchTab failed, falling back to manual method');
+                // Fallback to manual method
+                Tool_json_validator.elements.tabs.nav.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const activeBtn = Tool_json_validator.elements.tabs.nav.find(btn => 
+                    btn.getAttribute('data-tab') === tabName
+                );
+                if (activeBtn) activeBtn.classList.add('active');
+                
+                Object.entries(Tool_json_validator.elements.tabs.contents).forEach(([tab, content]) => {
+                    content.classList.toggle('active', tab === tabName);
+                });
+                
+                Tool_json_validator.state.activeTab = tabName;
+                Tool_json_validator.updateStats(tabName);
+                if (tabName !== 'validator') {
+                    Tool_json_validator.updateOutputStats(tabName);
+                }
+            }
+        } else {
+            console.warn('SubTabs utility not available, using fallback method');
+            // Fallback method (original logic but improved)
+            Tool_json_validator.elements.tabs.nav.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = Tool_json_validator.elements.tabs.nav.find(btn => 
+                btn.getAttribute('data-tab') === tabName
+            );
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            Object.entries(Tool_json_validator.elements.tabs.contents).forEach(([tab, content]) => {
+                content.classList.toggle('active', tab === tabName);
+            });
+            
+            Tool_json_validator.state.activeTab = tabName;
+            Tool_json_validator.updateStats(tabName);
+            if (tabName !== 'validator') {
+                Tool_json_validator.updateOutputStats(tabName);
+            }
         }
     },
     

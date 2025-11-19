@@ -6,7 +6,7 @@ const ToolsRegistry = {
             name: 'JSON Validator & Beautifier',
             description: 'Validate, beautify, and minify JSON with error reporting',
             icon: '📋',
-            modulePath: './tools/json-validator/tool.js',
+            modulePath: '../tools/json-validator/tool.js',
             category: 'formatters',
             tags: ['json', 'validate', 'beautify', 'format']
         },

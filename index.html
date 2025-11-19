@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeveloperTools - Professional Developer Utilities</title>
+    <meta name="description" content="A professional, lightweight, client-side web application that aggregates common developer utilities in a single, elegant interface.">
+    
+    <!-- Immediate redirect to app directory -->
+    <script>
+        // Immediate redirect to app directory
+        window.location.replace('./app/');
+    </script>
+    
+    <!-- Meta redirect as fallback -->
+    <meta http-equiv="refresh" content="0; url=./app/">
+    
+    <!-- Styling for fallback content -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 600px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .redirect-link {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .redirect-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ DeveloperTools</h1>
+        <p>Professional Developer Utilities - Redirecting to application...</p>
+        
+        <div class="loading">
+            <div class="spinner"></div>
+            <span>Loading application...</span>
+        </div>
+        
+        <p style="margin-top: 2rem; font-size: 1rem;">
+            If you're not redirected automatically, 
+            <a href="./app/" class="redirect-link">click here to access DeveloperTools</a>
+        </p>
+        
+        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 3rem;">
+            A lightweight, client-side web application with JSON validation, beautification, and more developer utilities.
+        </p>
+    </div>
+</body>
+</html>

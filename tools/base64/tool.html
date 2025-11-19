@@ -1,0 +1,175 @@
+<!-- Base64 Tool Tabs -->
+<div class="base64-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="encoder">Base64 Encoder</button>
+        <button class="tab-btn" data-tab="decoder">Base64 Decoder</button>
+    </div>
+    
+    <!-- Base64 Encoder Tab -->
+    <div class="tab-content active" id="encoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Input Text/File</h3>
+                
+                <div class="tool-controls">
+                    <button id="encode-btn" class="primary">Encode to Base64</button>
+                    
+                    <div class="encoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="url-safe-encode"> URL-Safe Base64
+                        </label>
+                    </div>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-file-encoder" />
+                        <label for="upload-file-encoder" class="file-upload-label">
+                            📁 Upload File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-text-encoder" 
+                        class="tool-textarea" 
+                        placeholder="Enter text to encode, or upload a file..."
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="drop-zone" id="drop-zone-encoder">
+                        <div class="drop-zone-content">
+                            <span class="drop-icon">📁</span>
+                            <p>Drag and drop a file here</p>
+                            <span class="drop-hint">or click "Upload File" above</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="input-size-encoder">0 bytes</span></span>
+                    <span>File: <span id="file-info-encoder">None</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Base64 Encoded Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-encoder">📋 Copy</button>
+                    <button id="download-btn-encoder">💾 Download</button>
+                    <button id="clear-btn-encoder">🗑️ Clear</button>
+                </div>
+                
+                <textarea 
+                    id="output-base64-encoder" 
+                    class="tool-textarea" 
+                    placeholder="Base64 encoded output will appear here..."
+                    readonly
+                    spellcheck="false"
+                ></textarea>
+                
+                <div class="tool-status">
+                    <span>Output: <span id="output-size-encoder">0 bytes</span></span>
+                    <span>Size Increase: <span id="size-increase-encoder">+0%</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Base64 Decoder Tab -->
+    <div class="tab-content" id="decoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Base64 Input</h3>
+                
+                <div class="tool-controls">
+                    <button id="decode-btn" class="primary">Decode from Base64</button>
+                    
+                    <div class="decoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="url-safe-decode"> URL-Safe Base64
+                        </label>
+                    </div>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-file-decoder" accept=".txt,.b64" />
+                        <label for="upload-file-decoder" class="file-upload-label">
+                            📁 Upload Base64 File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-base64-decoder" 
+                        class="tool-textarea" 
+                        placeholder="Paste Base64 encoded text here..."
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="drop-zone" id="drop-zone-decoder">
+                        <div class="drop-zone-content">
+                            <span class="drop-icon">📄</span>
+                            <p>Drag and drop a Base64 file here</p>
+                            <span class="drop-hint">Supports .txt, .b64 files</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Input: <span id="input-size-decoder">0 bytes</span></span>
+                    <span>Valid: <span id="validation-status-decoder">Unknown</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Decoded Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-decoder">📋 Copy Text</button>
+                    <button id="download-btn-decoder">💾 Download File</button>
+                    <button id="clear-btn-decoder">🗑️ Clear</button>
+                </div>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="output-text-decoder" 
+                        class="tool-textarea" 
+                        placeholder="Decoded text output will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="binary-output" id="binary-output-decoder" style="display: none;">
+                        <div class="binary-info">
+                            <span class="binary-icon">📦</span>
+                            <div class="binary-details">
+                                <p><strong>Binary File Detected</strong></p>
+                                <p>File Type: <span id="binary-type">Unknown</span></p>
+                                <p>Size: <span id="binary-size">0 bytes</span></p>
+                                <p>Use "Download File" to save the decoded file.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Output: <span id="output-size-decoder">0 bytes</span></span>
+                    <span>Type: <span id="output-type-decoder">Text</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Indicator -->
+<div id="progress-indicator" class="progress-indicator hidden">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Processing...</div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>

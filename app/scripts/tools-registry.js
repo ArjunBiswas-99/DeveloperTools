@@ -17,8 +17,7 @@ const ToolsRegistry = {
             icon: '🔐',
             modulePath: '../tools/base64/tool.js',
             category: 'encoders',
-            tags: ['base64', 'encode', 'decode'],
-            disabled: true // Will enable when implemented
+            tags: ['base64', 'encode', 'decode']
         },
         {
             id: 'url-encoder-decoder',
@@ -476,6 +475,439 @@ const ToolsRegistry = {
 /* Additional styles truncated for brevity */`;
                     document.head.appendChild(style);
                 }
+            } else if (id === 'base64') {
+                // Check if CSS is already loaded
+                if (!document.querySelector('style[data-tool="base64"]')) {
+                    const style = document.createElement('style');
+                    style.setAttribute('data-tool', 'base64');
+                    style.textContent = `/* Base64 Tool Styles */
+.base64-tabs {
+    width: 100%;
+    padding: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Tab Navigation */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+    gap: 0;
+}
+
+.tab-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    min-width: 140px;
+    text-align: center;
+}
+
+.tab-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    z-index: 1;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--bg-primary);
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tool Layout */
+.tool-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    min-height: 600px;
+}
+
+.tool-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.tool-panel h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Tool Controls */
+.tool-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.encoding-options,
+.decoding-options {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Input Area */
+.input-area {
+    position: relative;
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.tool-textarea {
+    width: 100%;
+    min-height: 300px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.tool-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.tool-textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Drop Zone */
+.drop-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(13, 110, 253, 0.05);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.drop-zone.drag-over {
+    display: flex;
+    border-color: var(--accent-color);
+    background: rgba(13, 110, 253, 0.1);
+}
+
+.drop-zone-content {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.drop-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.drop-zone-content p {
+    margin: 0.5rem 0;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.drop-hint {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* Output Area */
+.output-area {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.binary-output {
+    width: 100%;
+    min-height: 300px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.binary-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    text-align: left;
+}
+
+.binary-icon {
+    font-size: 3rem;
+    opacity: 0.7;
+}
+
+.binary-details p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+}
+
+.binary-details strong {
+    color: var(--text-primary);
+}
+
+/* Tool Actions */
+.tool-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.tool-actions button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.tool-actions button:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+.tool-actions button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Tool Status */
+.tool-status {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-tertiary, var(--bg-primary));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+
+.tool-status span {
+    white-space: nowrap;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 300px;
+}
+
+.progress-indicator.hidden {
+    display: none;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--accent-color);
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-text {
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* File Upload */
+.file-upload {
+    display: inline-block;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.file-upload-label:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+/* Primary Button */
+.primary {
+    background: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color) !important;
+    font-weight: 500;
+}
+
+.primary:hover {
+    background: var(--accent-color-hover, var(--accent-color)) !important;
+    transform: translateY(-1px);
+}
+
+.primary:disabled {
+    background: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+    transform: none !important;
+}
+
+/* Error Display */
+.error-display {
+    background: var(--error-bg);
+    border: 1px solid var(--error-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    color: var(--error-color);
+}
+
+.error-display.hidden {
+    display: none;
+}
+
+/* Status Display */
+#status-display {
+    margin: 1rem 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tool-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .tab-btn {
+        min-width: 120px;
+        padding: 0.6rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .tool-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .tool-actions {
+        justify-content: center;
+    }
+    
+    .tool-status {
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .progress-indicator {
+        min-width: 280px;
+        padding: 1.5rem;
+    }
+}`;
+                    document.head.appendChild(style);
+                }
             }
             
             // Embed tool HTML directly to avoid CORS issues
@@ -647,6 +1079,248 @@ const ToolsRegistry = {
             </div>
         </div>
     </div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>`;
+            } else if (id === 'base64') {
+                html = `<!-- Base64 Tool Tabs -->
+<div class="base64-tabs">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="encoder">Text Encoder</button>
+        <button class="tab-btn" data-tab="decoder">Text Decoder</button>
+        <button class="tab-btn" data-tab="file-encoder">File Encoder</button>
+    </div>
+    
+    <!-- Text Encoder Tab -->
+    <div class="tab-content active" id="encoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Input Text</h3>
+                
+                <div class="tool-controls">
+                    <button id="encode-btn" class="primary">Encode to Base64</button>
+                    
+                    <div class="encoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="url-safe-encode" />
+                            URL Safe
+                        </label>
+                    </div>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-text-file" accept=".txt" />
+                        <label for="upload-text-file" class="file-upload-label">
+                            📁 Upload Text File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-text" 
+                        class="tool-textarea" 
+                        placeholder="Enter text to encode to Base64..."
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="drop-zone" id="text-drop-zone">
+                        <div class="drop-zone-content">
+                            <span class="drop-icon">📄</span>
+                            <p>Drop text file here</p>
+                            <span class="drop-hint">Supports .txt files</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Characters: <span id="input-text-chars">0</span></span>
+                    <span>Lines: <span id="input-text-lines">0</span></span>
+                    <span>Bytes: <span id="input-text-bytes">0</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Base64 Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-encode">📋 Copy</button>
+                    <button id="download-btn-encode">💾 Download</button>
+                    <button id="clear-btn-encode">🗑️ Clear</button>
+                </div>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="output-base64" 
+                        class="tool-textarea" 
+                        placeholder="Base64 encoded text will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Characters: <span id="output-base64-chars">0</span></span>
+                    <span>Size: <span id="base64-size-change">-</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Text Decoder Tab -->
+    <div class="tab-content" id="decoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>Base64 Input</h3>
+                
+                <div class="tool-controls">
+                    <button id="decode-btn" class="primary">Decode from Base64</button>
+                    
+                    <div class="decoding-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="url-safe-decode" />
+                            URL Safe
+                        </label>
+                    </div>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-base64-file" accept=".txt,.b64" />
+                        <label for="upload-base64-file" class="file-upload-label">
+                            📁 Upload Base64 File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <textarea 
+                        id="input-base64" 
+                        class="tool-textarea" 
+                        placeholder="Paste Base64 encoded text here to decode..."
+                        spellcheck="false"
+                    ></textarea>
+                    
+                    <div class="drop-zone" id="base64-drop-zone">
+                        <div class="drop-zone-content">
+                            <span class="drop-icon">🔐</span>
+                            <p>Drop Base64 file here</p>
+                            <span class="drop-hint">Supports .txt, .b64 files</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Characters: <span id="input-base64-chars">0</span></span>
+                    <span>Valid: <span id="base64-valid">Unknown</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Decoded Text</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-decode">📋 Copy</button>
+                    <button id="download-btn-decode">💾 Download</button>
+                    <button id="clear-btn-decode">🗑️ Clear</button>
+                </div>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="output-text" 
+                        class="tool-textarea" 
+                        placeholder="Decoded text will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Characters: <span id="output-text-chars">0</span></span>
+                    <span>Lines: <span id="output-text-lines">0</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- File Encoder Tab -->
+    <div class="tab-content" id="file-encoder-tab">
+        <div class="tool-layout">
+            <div class="tool-panel">
+                <h3>File Input</h3>
+                
+                <div class="tool-controls">
+                    <button id="encode-file-btn" class="primary">Encode File to Base64</button>
+                    
+                    <div class="file-upload">
+                        <input type="file" id="upload-binary-file" />
+                        <label for="upload-binary-file" class="file-upload-label">
+                            📁 Select File
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="binary-output" id="file-info-display">
+                        <div class="binary-info">
+                            <span class="binary-icon">📄</span>
+                            <div class="binary-details">
+                                <p><strong>No file selected</strong></p>
+                                <p>Choose a file to encode to Base64</p>
+                                <p class="drop-hint">Drag and drop files here or click "Select File"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="drop-zone" id="file-drop-zone">
+                        <div class="drop-zone-content">
+                            <span class="drop-icon">📁</span>
+                            <p>Drop file here</p>
+                            <span class="drop-hint">Any file type supported</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-status">
+                    <span>File: <span id="file-name">None</span></span>
+                    <span>Size: <span id="file-size">0 bytes</span></span>
+                    <span>Type: <span id="file-type">-</span></span>
+                </div>
+            </div>
+            
+            <div class="tool-panel">
+                <h3>Base64 File Output</h3>
+                
+                <div class="tool-actions">
+                    <button id="copy-btn-file">📋 Copy</button>
+                    <button id="download-btn-file">💾 Download</button>
+                    <button id="clear-btn-file">🗑️ Clear</button>
+                </div>
+                
+                <div class="output-area">
+                    <textarea 
+                        id="output-file-base64" 
+                        class="tool-textarea" 
+                        placeholder="Base64 encoded file will appear here..."
+                        readonly
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                
+                <div class="tool-status">
+                    <span>Characters: <span id="output-file-chars">0</span></span>
+                    <span>Size Change: <span id="file-size-change">-</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Indicator -->
+<div id="progress-indicator" class="progress-indicator hidden">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Processing...</div>
 </div>
 
 <!-- Status and Error Display -->

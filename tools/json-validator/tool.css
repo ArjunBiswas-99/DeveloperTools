@@ -1,0 +1,299 @@
+/* JSON Validator Tool Styles */
+.json-validator {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Enhanced tool layout for JSON validator */
+.json-validator .tool-layout {
+    flex: 1;
+    min-height: 0; /* Important for flex children with overflow */
+}
+
+.json-validator .tool-panel {
+    min-height: 0; /* Important for flex children with overflow */
+}
+
+.json-validator .tool-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    tab-size: 2;
+    white-space: pre;
+    word-wrap: break-word;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 300px;
+}
+
+.json-validator .tool-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.json-validator .tool-textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Status displays */
+.json-validator .tool-status {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.json-validator .tool-status.success {
+    background: var(--success-bg);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.json-validator .tool-status.error {
+    background: var(--error-bg);
+    color: var(--error-color);
+    border-color: var(--error-color);
+}
+
+/* Controls styling */
+.json-validator .tool-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.json-validator .tool-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+/* File upload specific styling */
+.json-validator .file-upload {
+    position: relative;
+}
+
+.json-validator .file-upload input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.json-validator .file-upload-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.json-validator .file-upload-label:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+/* Select dropdown */
+.json-validator select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.json-validator select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* Error display */
+.json-validator .error-display {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+    border-radius: var(--border-radius);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.json-validator .error-display.hidden {
+    display: none;
+}
+
+/* Status display */
+.json-validator #status-display {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    display: none;
+}
+
+.json-validator #status-display.success {
+    display: block;
+    background: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.json-validator #status-display.error {
+    display: block;
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+.json-validator #status-display.info {
+    display: block;
+    background: var(--info-bg);
+    color: var(--info-color);
+    border: 1px solid var(--info-color);
+}
+
+/* Button enhancements */
+.json-validator button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.json-validator button:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: var(--accent-color);
+}
+
+.json-validator button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.json-validator button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.json-validator button.primary {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+.json-validator button.primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+/* Loading states */
+.json-validator .loading {
+    position: relative;
+}
+
+.json-validator .loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Size difference indicator */
+.json-validator #size-diff {
+    font-weight: 500;
+}
+
+.json-validator #size-diff.smaller {
+    color: var(--success-color);
+}
+
+.json-validator #size-diff.larger {
+    color: var(--warning-color);
+}
+
+.json-validator #size-diff.same {
+    color: var(--text-secondary);
+}
+
+/* JSON syntax highlighting hints (simple) */
+.json-validator .tool-textarea.valid {
+    border-color: var(--success-color);
+}
+
+.json-validator .tool-textarea.invalid {
+    border-color: var(--error-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .json-validator .tool-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .json-validator .tool-controls,
+    .json-validator .tool-actions {
+        justify-content: center;
+    }
+    
+    .json-validator .tool-textarea {
+        min-height: 200px;
+    }
+}
+
+/* Focus improvements */
+.json-validator *:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.json-validator button:focus,
+.json-validator select:focus,
+.json-validator .tool-textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-color);
+}

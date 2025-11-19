@@ -1,0 +1,64 @@
+<div class="tool-layout">
+    <!-- Left Panel: Input -->
+    <div class="tool-panel">
+        <h3>Input JSON</h3>
+        
+        <div class="tool-controls">
+            <button id="validate-btn" class="primary">Validate</button>
+            <button id="beautify-btn">Beautify</button>
+            <button id="minify-btn">Minify</button>
+            <select id="indent-select">
+                <option value="2">2 spaces</option>
+                <option value="4">4 spaces</option>
+                <option value="\t">Tabs</option>
+            </select>
+            
+            <div class="file-upload">
+                <input type="file" id="upload-file" accept=".json,.txt" />
+                <label for="upload-file" class="file-upload-label">
+                    📁 Upload File
+                </label>
+            </div>
+        </div>
+        
+        <textarea 
+            id="input-json" 
+            class="tool-textarea" 
+            placeholder="Paste your JSON here or upload a file..."
+            spellcheck="false"
+        ></textarea>
+        
+        <div id="input-stats" class="tool-status">
+            <span>Characters: <span id="input-chars">0</span></span>
+            <span>Lines: <span id="input-lines">0</span></span>
+        </div>
+    </div>
+    
+    <!-- Right Panel: Output -->
+    <div class="tool-panel">
+        <h3>Output</h3>
+        
+        <div class="tool-actions">
+            <button id="copy-btn">📋 Copy</button>
+            <button id="download-btn">💾 Download</button>
+            <button id="clear-btn">🗑️ Clear</button>
+        </div>
+        
+        <textarea 
+            id="output-json" 
+            class="tool-textarea" 
+            placeholder="Processed JSON will appear here..."
+            readonly
+            spellcheck="false"
+        ></textarea>
+        
+        <div id="output-stats" class="tool-status">
+            <span>Characters: <span id="output-chars">0</span></span>
+            <span>Size: <span id="size-diff">-</span></span>
+        </div>
+    </div>
+</div>
+
+<!-- Status and Error Display -->
+<div id="status-display"></div>
+<div id="error-display" class="error-display hidden"></div>

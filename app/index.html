@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeveloperTools</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/theme.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Panel: Tabs/Menu -->
+        <header id="top-panel" class="top-panel">
+            <nav class="tabs-container">
+                <div class="app-title">
+                    <h1>DeveloperTools</h1>
+                </div>
+                <div id="tabs" class="tabs"></div>
+                <div class="search-container">
+                    <input type="text" id="tool-search" placeholder="Search tools..." class="search-input">
+                </div>
+            </nav>
+        </header>
+
+        <!-- Bottom Panel: Tool Content -->
+        <main id="bottom-panel" class="bottom-panel">
+            <div id="tool-container" class="tool-container">
+                <div class="welcome-message">
+                    <h2>Welcome to DeveloperTools</h2>
+                    <p>Select a tool from the tabs above to get started.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="scripts/utils/dom.js"></script>
+    <script src="scripts/utils/clipboard.js"></script>
+    <script src="scripts/utils/download.js"></script>
+    <script src="scripts/utils/storage.js"></script>
+    <script src="scripts/ui/toasts.js"></script>
+    <script src="scripts/ui/tabs.js"></script>
+    <script src="scripts/tools-registry.js"></script>
+    <script src="scripts/router.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

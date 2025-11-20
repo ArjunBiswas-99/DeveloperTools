@@ -19,6 +19,38 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Chrome Extension Mode Adjustments */
+body.extension-mode {
+    min-width: 800px;
+    min-height: 600px;
+    max-width: 1000px;
+    max-height: 700px;
+    overflow: auto;
+}
+
+body.extension-mode #app {
+    min-height: 600px;
+    max-height: 700px;
+}
+
+body.extension-mode .main-content {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+body.extension-mode .hero-section {
+    padding: 2rem 0;
+}
+
+body.extension-mode .hero-title {
+    font-size: 2rem;
+}
+
+body.extension-mode .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
 /* App Layout */
 #app {
     display: flex;

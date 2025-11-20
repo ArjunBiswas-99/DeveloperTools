@@ -10,10 +10,21 @@
         initialized: false
     };
 
+    // Detect if running as Chrome extension
+    const isExtension = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
+    
     // Initialize the application
     async function initializeApp() {
         try {
             console.log('🚀 Initializing DeveloperTools...');
+            
+            // Apply extension mode class if running as extension
+            if (isExtension) {
+                document.body.classList.add('extension-mode');
+                console.log('📦 Running as Chrome Extension');
+            } else {
+                console.log('🌐 Running as Web Application');
+            }
             
             // Load tools first
             await loadTools();

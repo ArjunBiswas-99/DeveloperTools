@@ -1,59 +1,130 @@
-// Storage utility functions for localStorage
+// Storage utility functions for localStorage and Chrome Extension Storage
+// Automatically detects environment and uses appropriate storage API
 const Storage = {
     // Key prefix to avoid conflicts
     PREFIX: 'devtools_',
     
+    // Detect if running as Chrome extension
+    _isExtension: typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id,
+    
     // Get prefixed key
     getKey: (key) => `${Storage.PREFIX}${key}`,
     
-    // Set item in localStorage
-    set: (key, value) => {
+    // Set item in storage (works for both localStorage and Chrome storage)
+    set: async (key, value) => {
         try {
             const prefixedKey = Storage.getKey(key);
-            const serializedValue = JSON.stringify(value);
-            localStorage.setItem(prefixedKey, serializedValue);
-            return true;
+            
+            if (Storage._isExtension) {
+                // Chrome extension storage
+                return new Promise((resolve) => {
+                    chrome.storage.local.set({ [prefixedKey]: value }, () => {
+                        if (chrome.runtime.lastError) {
+                            console.warn('Failed to set Chrome storage item:', chrome.runtime.lastError);
+                            resolve(false);
+                        } else {
+                            resolve(true);
+                        }
+                    });
+                });
+            } else {
+                // Regular localStorage
+                const serializedValue = JSON.stringify(value);
+                localStorage.setItem(prefixedKey, serializedValue);
+                return Promise.resolve(true);
+            }
         } catch (error) {
-            console.warn('Failed to set localStorage item:', error);
-            return false;
+            console.warn('Failed to set storage item:', error);
+            return Promise.resolve(false);
         }
     },
     
-    // Get item from localStorage
-    get: (key, defaultValue = null) => {
+    // Get item from storage (works for both localStorage and Chrome storage)
+    get: async (key, defaultValue = null) => {
         try {
             const prefixedKey = Storage.getKey(key);
-            const item = localStorage.getItem(prefixedKey);
-            return item ? JSON.parse(item) : defaultValue;
+            
+            if (Storage._isExtension) {
+                // Chrome extension storage
+                return new Promise((resolve) => {
+                    chrome.storage.local.get([prefixedKey], (result) => {
+                        if (chrome.runtime.lastError) {
+                            console.warn('Failed to get Chrome storage item:', chrome.runtime.lastError);
+                            resolve(defaultValue);
+                        } else {
+                            resolve(result[prefixedKey] !== undefined ? result[prefixedKey] : defaultValue);
+                        }
+                    });
+                });
+            } else {
+                // Regular localStorage
+                const item = localStorage.getItem(prefixedKey);
+                return Promise.resolve(item ? JSON.parse(item) : defaultValue);
+            }
         } catch (error) {
-            console.warn('Failed to get localStorage item:', error);
-            return defaultValue;
+            console.warn('Failed to get storage item:', error);
+            return Promise.resolve(defaultValue);
         }
     },
     
-    // Remove item from localStorage
-    remove: (key) => {
+    // Remove item from storage (works for both localStorage and Chrome storage)
+    remove: async (key) => {
         try {
             const prefixedKey = Storage.getKey(key);
-            localStorage.removeItem(prefixedKey);
-            return true;
+            
+            if (Storage._isExtension) {
+                // Chrome extension storage
+                return new Promise((resolve) => {
+                    chrome.storage.local.remove([prefixedKey], () => {
+                        if (chrome.runtime.lastError) {
+                            console.warn('Failed to remove Chrome storage item:', chrome.runtime.lastError);
+                            resolve(false);
+                        } else {
+                            resolve(true);
+                        }
+                    });
+                });
+            } else {
+                // Regular localStorage
+                localStorage.removeItem(prefixedKey);
+                return Promise.resolve(true);
+            }
         } catch (error) {
-            console.warn('Failed to remove localStorage item:', error);
-            return false;
+            console.warn('Failed to remove storage item:', error);
+            return Promise.resolve(false);
         }
     },
     
-    // Clear all app-related items
-    clear: () => {
+    // Clear all app-related items (works for both localStorage and Chrome storage)
+    clear: async () => {
         try {
-            const keys = Object.keys(localStorage).filter(key => 
-                key.startsWith(Storage.PREFIX)
-            );
-            keys.forEach(key => localStorage.removeItem(key));
-            return true;
+            if (Storage._isExtension) {
+                // Chrome extension storage
+                return new Promise((resolve) => {
+                    chrome.storage.local.get(null, (items) => {
+                        const keysToRemove = Object.keys(items).filter(key => 
+                            key.startsWith(Storage.PREFIX)
+                        );
+                        if (keysToRemove.length > 0) {
+                            chrome.storage.local.remove(keysToRemove, () => {
+                                resolve(!chrome.runtime.lastError);
+                            });
+                        } else {
+                            resolve(true);
+                        }
+                    });
+                });
+            } else {
+                // Regular localStorage
+                const keys = Object.keys(localStorage).filter(key => 
+                    key.startsWith(Storage.PREFIX)
+                );
+                keys.forEach(key => localStorage.removeItem(key));
+                return Promise.resolve(true);
+            }
         } catch (error) {
-            console.warn('Failed to clear localStorage:', error);
-            return false;
+            console.warn('Failed to clear storage:', error);
+            return Promise.resolve(false);
         }
     },
     
